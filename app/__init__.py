@@ -1,4 +1,6 @@
 from flask import Flask
+from flask_cors.extension import CORS
 
 app = Flask(__name__)
-from app import views
+CORS(app)
+from app import db_connector
