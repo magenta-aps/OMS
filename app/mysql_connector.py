@@ -13,8 +13,10 @@ class MySQLConnector(object):
         connection = MySQLdb.connect(host = self.host, db = self.name, user = self.user, passwd = self.password)
 
         cursor = connection.cursor()
-        cursor.execute('INSERT INTO ' + table + ' VALUES (%s, %s)', values)
+        values_str = '(' + len(values)*'%s, ' + ')'
+        cursor.execute('INSERT INTO ' + table + ' VALUES ' + values_str, values)
         connection.commit()
 
         connection.close()
     
+# con = MySQLConnector()
