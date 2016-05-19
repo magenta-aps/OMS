@@ -1,0 +1,45 @@
+{
+	"order": {
+		"order": "abcde12345",
+		"title": "Example order",
+		"origin": null,
+		"endUserOrderNotes": "Please provide this order as fast as possible",
+		"archivistOrderNotes": "This order may be top secret",
+		"orderDate": "2016-05-18 12:00:00",
+		"validationDate": "2016-05-18 12:00:00",
+		"plannedDate": "2016-05-18 12:00:00",
+		"AccessDate": "2016-05-18 12:00:00",
+		"AccessDateComments": "Can be accessed right away",
+		"userid": "abcde12345",
+		"responsiblePerson": "Alex",
+		"orderStatus": "New",
+		"accessRestrictionCode": 0,
+		"accessRestrictionTextExplanation": "No worries",
+		"noteText": "This is the noteText",
+		"noteTimestamp": "2016-05-18 12:00:00",
+		"accessEndDate": "2016-05-18 12:00:00",
+		"deliveryFormat": "This is the deliveryFormat"
+	},
+	"items": [
+		{
+			"id": 12345,
+			"orderId": "abcde12345",
+			"refCode": "abcde12345",
+			"title": "Item1",
+			"aipURI": "http://xyz.org/path",
+			"aipTitle": "This is the AIP title",
+			"levelOfDescription": 123
+		},
+		{
+			"id": 12346,
+			"orderId": "abcde12346",
+			"refCode": "abcde12346",
+			"title": "Item2",
+			"aipURI": "http://xyz.org/path2",
+			"aipTitle": "This is the AIP title 2",
+			"levelOfDescription": 1234
+		}
+		
+		
+	]
+}
