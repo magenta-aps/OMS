@@ -1,10 +1,16 @@
+from flask_sqlalchemy import SQLAlchemy
 __authors__ = 'lanre, andreas'
 
 from flask import Flask
 
 app = Flask(__name__)
-from oms import service
-from oms import sqlalchemy_sandbox 
+app.config.from_object('config')
+db = SQLAlchemy(app)
+
+from oms import service, db_model
+
+# db.create_all()
+#from oms import sqlalchemy_sandbox 
 
 # Do not write any code below this point!
 # See note on circular import at http://flask.pocoo.org/docs/0.10/patterns/packages/
