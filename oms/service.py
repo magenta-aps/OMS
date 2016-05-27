@@ -4,15 +4,14 @@ from flask import jsonify
 from oms import app
 # from sqlalchemy_sandbox import db, Person
 
+import db_model
+print db_model.Person.select().execute().fetchall()
+
+
 @app.route('/test', methods = ['GET'])
 def test():
     return jsonify({'foo': 'bar'})
 
-"""
 @app.route('/dbtest', methods = ['GET'])
 def dbtest():
-    person = Person('uid3', 'Bill', 'Clinton', 'bill@magenta.dk')
-    db.session.add(person)
-    db.session.commit()
-    return jsonify({'foo': 'db'})
-"""
+    return db_model.Person.select().execute().fetchall()[0][0]

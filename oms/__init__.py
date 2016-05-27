@@ -7,7 +7,9 @@ app = Flask(__name__)
 app.config.from_object('config')
 db = SQLAlchemy(app)
 
-from oms import service, db_model
+from oms import service#, db_model
+# from db_model import Person
+# print Person.select().execute().fetchall()
 
 # db.create_all()
 #from oms import sqlalchemy_sandbox 

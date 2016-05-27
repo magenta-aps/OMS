@@ -1,9 +1,9 @@
-# from oms import db
+from oms import db
 
 from sqlalchemy import create_engine, MetaData, Table
 
-engine = create_engine('mysql://andreas:hemmeligt@localhost/temp', convert_unicode = True)
-metadata = MetaData(bind = engine)
+# engine = create_engine('mysql://andreas:hemmeligt@localhost/temp', convert_unicode = True)
+metadata = MetaData(bind = db.engine)
 
 Person = Table('Person', metadata, autoload = True)
 EndUser = Table('EndUser', metadata, autoload = True)
