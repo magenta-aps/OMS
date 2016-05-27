@@ -1,12 +1,17 @@
 __author__ = 'andreas'
 
-from flask import jsonify
+from flask import jsonify, request
 from oms import app
-# from sqlalchemy_sandbox import db, Person
+from db_model import Person, EndUser, Archivist, Orders, OrderItems, OrderedBy, Responsible, BelongsTo
 
-import db_model
-print db_model.Person.select().execute().fetchall()
+# print EndUser.select().execute().fetchall()
 
+@app.route('/getPerson', methods = ['GET'])
+def get_end_user():
+    # Parameter existence could be checked
+    uid = request.args.get('uid')
+    person = Person.select(Person.c.uid == uid).execute().first()
+    return person[0][0]
 
 @app.route('/test', methods = ['GET'])
 def test():
