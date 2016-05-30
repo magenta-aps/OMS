@@ -1,0 +1,32 @@
+{
+	"order": {
+		"title": "Example order title",
+		"origin": null,
+		"endUserOrderNotes": "Please provide this order as fast as possible",
+		"orderDate": "2016-05-18 12:00:00",
+		"plannedDate": "2016-05-18 12:00:00",
+		"orderStatus": "New",
+		"user": {
+			"uid": "endUser-UUID1",
+			"firstname": "Clint",
+			"lastname": "Eastwood",
+			"email": "clint@hollywood.biz"		
+		},
+		"items": [
+					{
+						"refCode": "refCode-for-item1",
+						"title": "Item1",
+						"aipURI": "http://xyz.org/path",
+						"aipTitle": "This is the AIP title",
+						"levelOfDescription": 123
+					},
+					{
+						"refCode": "refCode-for-item2",
+						"title": "Item2",
+						"aipURI": "http://xyz.org/path2",
+						"aipTitle": "This is the AIP title 2",
+						"levelOfDescription": 1234
+					}
+				]
+	}
+}
