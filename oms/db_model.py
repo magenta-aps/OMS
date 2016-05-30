@@ -2,19 +2,40 @@ from oms import db
 from sqlalchemy import create_engine, MetaData, Table
 
 # engine = create_engine('mysql://andreas:hemmeligt@localhost/temp', convert_unicode = True)
-metadata = MetaData(bind = db.engine)
+_metadata = MetaData(bind = db.engine)
 
 # Entity sets - see E/R diagram
-Person = Table('Person', metadata, autoload = True)
-EndUser = Table('EndUser', metadata, autoload = True)
-Archivist = Table('Archivist', metadata, autoload = True)
-Orders = Table('Orders', metadata, autoload = True)
-OrderItems = Table('OrderItems', metadata, autoload = True)
+Person = Table('Person', _metadata, autoload = True)
+EndUser = Table('EndUser', _metadata, autoload = True)
+Archivist = Table('Archivist', _metadata, autoload = True)
+Orders = Table('Orders', _metadata, autoload = True)
+OrderItems = Table('OrderItems', _metadata, autoload = True)
 
 # Relationships - see E/R diagram
-OrderedBy = Table('OrderedBy', metadata, autoload = True)
-Responsible = Table('Responsible', metadata, autoload = True)
-BelongsTo = Table('BelongsTo', metadata, autoload = True)
+OrderedBy = Table('OrderedBy', _metadata, autoload = True)
+Responsible = Table('Responsible', _metadata, autoload = True)
+BelongsTo = Table('BelongsTo', _metadata, autoload = True)
+
+# Helpful methods
+def insert_user(user):
+    """Insert user to DB if not already exists
+    
+    Keyword arguments:
+    user -- JSON containing the user details (see example)
+    
+    Example JSON:
+        {
+            "uid": "endUser-UUID1",
+            "firstname": "Clint",
+            "lastname": "Eastwood",
+            "email": "clint@hollywood.biz
+        }        
+    """
+    
+    if EndUser.select(EndUser.c.uid == user['uid']).execute().first() == None:
+        Person.insert(user).execute()
+        EndUser.insert({'uid': user['uid']}).execute()
+
 
 
 
