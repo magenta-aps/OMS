@@ -15,6 +15,24 @@ def get_end_user():
     return person[0][0]
 """
 
+@app.route('/getOrderStatus', methods = ['GET'])
+def get_order_status():
+    order_id = request.args.get('orderId')
+    try:
+        order = Orders.select(Orders.c.orderId == order_id).execute().first()
+        ordered_by = OrderedBy.select(OrderedBy.c.uid == order_id).execute().first()
+        responsible = Responsible.select(Responsible.c.uid == order_id).execute().first()
+        belongs_to = BelongsTo.select(BelongsTo.c.orderId == order_id).execute().first()
+        
+        order_dict = dict(zip(order.keys(), order.values()))
+#         order_dict['endUserId'] = ordered_by['uid']
+#         order_dict['assignee'] = responsible['uid']
+        
+        return jsonify(order_dict)
+    except exc.SQLAlchemyError as e:
+        return jsonify({'status': 'error',
+                        'message': e.message})
+
 @app.route('/newOrder', methods = ['POST'])
 def new_order():
     if not request.json:
