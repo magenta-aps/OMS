@@ -14,14 +14,12 @@
 		},
 		"items": [
 					{
-						"refCode": "refCode-for-item1",
 						"title": "Item1",
 						"aipURI": "http://xyz.org/path",
 						"aipTitle": "This is the AIP title",
 						"levelOfDescription": 123
 					},
 					{
-						"refCode": "refCode-for-item2",
 						"title": "Item2",
 						"aipURI": "http://xyz.org/path2",
 						"aipTitle": "This is the AIP title 2",

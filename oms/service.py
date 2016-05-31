@@ -25,14 +25,24 @@ def new_order():
     items = order.pop('items', None) 
     endUserOrderNotes = order.pop('endUserOrderNotes', None)
     
-    # Check, if the user is aldready in the DB - and insert user if not
-    insert_user(user)
-
-    # Insert order    
-    order['orderId'] = str(uuid.uuid4())
-    Orders.insert(order).execute()
+    try:
+        # Check, if the user is aldready in the DB - and insert user if not
+        insert_user(user)
     
-    return jsonify({'status': 'ok'})
+        # Insert order itself    
+        order['orderId'] = str(uuid.uuid4())
+        Orders.insert(order).execute()
+        
+        # Insert the order items
+        for item in items:
+            item['refCode'] = str(uuid.uuid4())
+            OrderItems.insert(item).execute()
+        return jsonify({'status': 'ok',
+                        'orderId': order['orderId']})
+    except exc.SQLAlchemyError as e:
+        return jsonify({'status': 'error',
+                        'message': e.message})
+    
     
     
 

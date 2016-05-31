@@ -14,4 +14,6 @@ BelongsTo = db_model.BelongsTo
 
 # q = join(Person, EndUser, EndUser.c.uid).select()
 
+# Person.select('sds').execute()
+
 # Orders.join(OrderedBy).select().where(Orders.c.orderId == OrderedBy.c.orderId and OrderedBy.uid == 'uid1').execute().fetchall()

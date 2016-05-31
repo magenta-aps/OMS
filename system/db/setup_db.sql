@@ -53,6 +53,7 @@ CREATE TABLE OrderItems(
 	refCode VARCHAR(32) PRIMARY KEY,
 	title VARCHAR(255),
 	aipURI VARCHAR(32),
+	aipTitle VARCHAR(32),
 	levelOfDescription TEXT
 );
 
