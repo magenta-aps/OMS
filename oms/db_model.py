@@ -1,7 +1,6 @@
 from oms import db
 from sqlalchemy import create_engine, MetaData, Table
 
-# engine = create_engine('mysql://andreas:hemmeligt@localhost/temp', convert_unicode = True)
 _metadata = MetaData(bind = db.engine)
 
 # Entity sets - see E/R diagram
