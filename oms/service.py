@@ -38,11 +38,17 @@ def get_order_status():
         ordered_by = OrderedBy.select(OrderedBy.c.orderId == order_id).execute().first()
         print ordered_by
         responsible = Responsible.select(Responsible.c.uid == order_id).execute().first()
-        belongs_to = BelongsTo.select(BelongsTo.c.orderId == order_id).execute().first()
+        print responsible
+        belongs_to = BelongsTo.select(BelongsTo.c.orderId == order_id).execute().fetchall()
         
         order_dict = dict(zip(order.keys(), order.values()))
         order_dict['endUserId'] = ordered_by['uid']
-#         order_dict['assignee'] = responsible['uid']
+        if responsible:
+            order_dict['assignee'] = responsible['uid']
+        else:
+            order_dict['assignee'] = 'none'
+        
+        order_dict['itemRefCodes'] = [b['refCode'] for b in belongs_to] 
         
         return jsonify(order_dict)
     except exc.SQLAlchemyError as e:
@@ -64,16 +70,16 @@ def new_order():
         insert_user(user)
     
         # Insert order itself    
-        order['orderId'] = str(uuid.uuid4())
+        order['orderId'] = uuid.uuid4().hex
         Orders.insert(order).execute()
         
         # Insert the order items
         for item in items:
-            item['refCode'] = str(uuid.uuid4())
+            item['refCode'] = uuid.uuid4().hex
             OrderItems.insert(item).execute()
             BelongsTo.insert({'orderId': order['orderId'], 'refCode': item['refCode']}).execute()
             
-        # Relations - insert data into OrderedBy
+        # Relations
         OrderedBy.insert({'orderId': order['orderId'], 'uid': user['uid'], 'endUserNote': endUserOrderNotes}).execute()
                 
         return jsonify({'status': 'ok',
