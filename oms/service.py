@@ -20,12 +20,13 @@ def get_order_status():
     order_id = request.args.get('orderId')
     try:
         order = Orders.select(Orders.c.orderId == order_id).execute().first()
-        ordered_by = OrderedBy.select(OrderedBy.c.uid == order_id).execute().first()
+        ordered_by = OrderedBy.select(OrderedBy.c.orderId == order_id).execute().first()
+        print ordered_by
         responsible = Responsible.select(Responsible.c.uid == order_id).execute().first()
         belongs_to = BelongsTo.select(BelongsTo.c.orderId == order_id).execute().first()
         
         order_dict = dict(zip(order.keys(), order.values()))
-#         order_dict['endUserId'] = ordered_by['uid']
+        order_dict['endUserId'] = ordered_by['uid']
 #         order_dict['assignee'] = responsible['uid']
         
         return jsonify(order_dict)
@@ -55,8 +56,14 @@ def new_order():
         for item in items:
             item['refCode'] = str(uuid.uuid4())
             OrderItems.insert(item).execute()
+            BelongsTo.insert({'orderId': order['orderId'], 'refCode': item['refCode']})
+            
+        # Relations - insert data into OrderedBy and BelongsTo
+        OrderedBy.insert({'orderId': order['orderId'], 'uid': user['uid'], 'endUserNote': endUserOrderNotes}).execute()
+                
         return jsonify({'status': 'ok',
                         'orderId': order['orderId']})
+         
     except exc.SQLAlchemyError as e:
         return jsonify({'status': 'error',
                         'message': e.message})
