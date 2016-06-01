@@ -1,3 +1,5 @@
+__author__ = 'Andreas Kring <andreas@magenta.dk>'
+
 from oms import db
 from sqlalchemy import create_engine, MetaData, Table
 

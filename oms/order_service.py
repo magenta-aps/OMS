@@ -27,9 +27,7 @@ def get_order_status():
     try:
         order = Orders.select(Orders.c.orderId == order_id).execute().first()
         ordered_by = OrderedBy.select(OrderedBy.c.orderId == order_id).execute().first()
-        print ordered_by
         responsible = Responsible.select(Responsible.c.uid == order_id).execute().first()
-        print responsible
         belongs_to = BelongsTo.select(BelongsTo.c.orderId == order_id).execute().fetchall()
         
         order_dict = dict(zip(order.keys(), order.values()))
