@@ -61,8 +61,8 @@ def new_order():
         insert_user(user)
     
         # Insert order itself    
-        # order['orderId'] = uuid.uuid4().hex
-        order['orderId'] = 'fixedUUID'
+        order['orderId'] = uuid.uuid4().hex
+        # order['orderId'] = 'fixedUUID'
         Orders.insert(order).execute()
         
         # Insert the order items
