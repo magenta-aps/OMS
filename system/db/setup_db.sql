@@ -1,4 +1,7 @@
-/* Setup MySQL DB to be used by the OMS */
+/* Setup MySQL DB to be used by the OMS
+ * 
+ * Author: Andreas Kring <andreas@magenta.dk>
+ * */
 
 DROP DATABASE IF EXISTS temp;
 CREATE DATABASE temp default character set utf8 default collate utf8_general_ci;
@@ -64,7 +67,7 @@ DROP TABLE IF EXISTS OrderedBy;
 CREATE TABLE OrderedBy(
 	uid VARCHAR(32),
 	orderId VARCHAR(32),
-	endUserNote TEXT,
+	endUserOrderNote TEXT,
 	PRIMARY KEY (uid, orderId),
 	FOREIGN KEY (uid) REFERENCES Person(uid)
 		ON DELETE CASCADE

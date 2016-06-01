@@ -1,0 +1,8 @@
+{
+	"orderId": "fixedUUID",
+	"title": "This is the new title",
+	"endUserOrderNote": "A new end user note",
+	"validationDate": "2016-05-18 12:00:00",
+	"plannedDate": "2017-05-18 12:00:00",
+	"orderStatus": "opened"
+}

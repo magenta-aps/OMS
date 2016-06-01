@@ -2,7 +2,7 @@
 	"order": {
 		"title": "Example order title",
 		"origin": null,
-		"endUserOrderNotes": "Please provide this order as fast as possible",
+		"endUserOrderNote": "Please provide this order as fast as possible",
 		"orderDate": "2016-05-18 12:00:00",
 		"plannedDate": "2016-05-18 12:00:00",
 		"orderStatus": "New",
