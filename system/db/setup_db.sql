@@ -105,8 +105,9 @@ CREATE TABLE BelongsTo(
 /* For testing */
 INSERT INTO Person VALUES ('uid1', 'Clint', 'Eastwood', 'clint@hollywood.com');
 INSERT INTO Person VALUES ('uid2', 'Bill', 'Clinton', 'bill@whitehouse.gov');
-INSERT INTO EndUser VALUES ('uid1');
+
 /*
+INSERT INTO EndUser VALUES ('uid1');
 INSERT INTO Orders VALUES ('orderId1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO Orders VALUES ('orderId2', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO Orders VALUES ('orderId3', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);

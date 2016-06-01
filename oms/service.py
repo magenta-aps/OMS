@@ -15,6 +15,21 @@ def get_end_user():
     return person[0][0]
 """
 
+@app.route('/deleteOrder', methods = ['DELETE'])
+def delete_order():
+    order_id = request.args.get('orderId')
+    print order_id
+    order_items = BelongsTo.select(BelongsTo.c.orderId == order_id).execute().fetchall()
+    try:
+        Orders.delete().where(Orders.c.orderId == order_id).execute()
+        for item in order_items:
+            OrderItems.delete().where(OrderItems.c.refCode == item['refCode']).execute()
+        return jsonify({'status': 'ok'})
+    except exc.SQLAlchemyError as e:
+        return jsonify({'status': 'error',
+                        'message': e.message})
+    
+
 @app.route('/getOrderStatus', methods = ['GET'])
 def get_order_status():
     order_id = request.args.get('orderId')
@@ -56,9 +71,9 @@ def new_order():
         for item in items:
             item['refCode'] = str(uuid.uuid4())
             OrderItems.insert(item).execute()
-            BelongsTo.insert({'orderId': order['orderId'], 'refCode': item['refCode']})
+            BelongsTo.insert({'orderId': order['orderId'], 'refCode': item['refCode']}).execute()
             
-        # Relations - insert data into OrderedBy and BelongsTo
+        # Relations - insert data into OrderedBy
         OrderedBy.insert({'orderId': order['orderId'], 'uid': user['uid'], 'endUserNote': endUserOrderNotes}).execute()
                 
         return jsonify({'status': 'ok',
