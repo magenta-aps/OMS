@@ -7,8 +7,8 @@ Backend (RESTful service) for the EARK Order Management Tool
 
 **GET /getOrder?uid=\<uid\>&status=\<status\>&notStatus=\<status\>&assignee=\<assignee\>**
 
-Can be call without parameters in which case all orders are returned. Provide exactly one of the 
-specified parameter for filter search results (further filtering should be done from the Anguler front-end). 
+Can be called without parameters in which case all orders are returned. Provide exactly one of the 
+specified parameter for filtering search results (further filtering should be done from the Anguler front-end). 
 
 **GET /getOrderStatus?orderId=\<orderId\>**
 
