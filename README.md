@@ -3,9 +3,12 @@ Backend (RESTful service) for the EARK Order Management Tool
 
 ## Order Service
 
-**DELETE /deleteOrder?orderId=<orderId>**
+**DELETE /deleteOrder?orderId=\<orderId\>**
 
-**GET /getOrderStatus?orderId=<orderId>**
+**GET /getOrdersForUser?uid=\<uid\>**
+Get the orderId's for a given user uid.
+
+**GET /getOrderStatus?orderId=\<orderId\>**
 
 **POST /newOrder**
 
