@@ -2,6 +2,7 @@ __author__ = 'Andreas Kring <andreas@magenta.dk>'
 
 from oms import db
 from sqlalchemy import create_engine, MetaData, Table
+from types import *
 
 _metadata = MetaData(bind = db.engine)
 
@@ -38,6 +39,13 @@ def insert_user(user):
         EndUser.insert({'uid': user['uid']}).execute()
 
 
+def sql_table_to_dict(sqlalchemy_table, property = None):
+    if type(sqlalchemy_table) == ListType:
+        print 'ListType'
+        
+    else:
+         print 'non list'
+    return dict(zip(sqlalchemy_table.keys(), sqlalchemy_table.values()))
 
 
 

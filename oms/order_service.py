@@ -21,6 +21,34 @@ def delete_order():
                         'message': e.message})
     
 
+@app.route('/getOrders', methods = ['GET'])
+def get_order_for_user():
+    try:
+        # order_id = request.args.get('orderId')
+        status = request.args.get('status')
+        not_status = request.args.get('notStatus')
+        print not_status
+        assignee = request.args.get('assignee')
+        uid = request.args.get('uid')
+        
+        # Further filtering should be done from the front-end
+        if status:
+            orders = Orders.select(Orders.c.orderStatus == status).execute().fetchall()
+        elif not_status:
+            orders = Orders.select(Orders.c.orderStatus != not_status).execute().fetchall()
+        elif assignee:
+            orders = Responsible.select(Responsible.c.uid == assignee).execute().fetchall()
+        elif uid:
+            orders = OrderedBy.select(OrderedBy.c.uid == uid).execute().fetchall()
+        else:
+            orders = Orders.select().execute().fetchall()
+        order_ids = [order['orderId'] for order in orders]
+        return jsonify({'orders': order_ids})
+    except exc.SQLAlchemyError as e:
+        return jsonify({'status': 'error',
+                        'message': e.message})
+
+
 @app.route('/getOrderStatus', methods = ['GET'])
 def get_order_status():
     order_id = request.args.get('orderId')
@@ -31,6 +59,7 @@ def get_order_status():
         belongs_to = BelongsTo.select(BelongsTo.c.orderId == order_id).execute().fetchall()
         
         order_dict = dict(zip(order.keys(), order.values()))
+        sql_table_to_dict(belongs_to)
         order_dict['endUserId'] = ordered_by['uid']
         if responsible:
             order_dict['assignee'] = responsible['uid']
@@ -43,6 +72,7 @@ def get_order_status():
     except exc.SQLAlchemyError as e:
         return jsonify({'status': 'error',
                         'message': e.message})
+
 
 @app.route('/newOrder', methods = ['POST'])
 def new_order():
@@ -60,6 +90,7 @@ def new_order():
     
         # Insert order itself    
         order['orderId'] = uuid.uuid4().hex
+        order['orderStatus'] = 'new'
         # order['orderId'] = 'fixedUUID'
         Orders.insert(order).execute()
         
@@ -85,4 +116,24 @@ def test():
     return jsonify({'foo': 'bar'})
 
        
+@app.route('/updateOrder', methods = ['PUT'])
+def update_order():
+    if not request.json:
+        abort(400)
+    order = request.json
+    try:
+        for key in order:
+            print key
+            if key in Orders.c.keys() and key != 'orderId':
+                Orders.update().where(Orders.c.orderId == order['orderId']).values({key: order[key]}).execute()
+            if key == 'endUserOrderNote':
+                OrderedBy.update().where(OrderedBy.c.orderId == order['orderId']).values({key: order[key]}).execute()
+            if key in Responsible.c.keys() and key != 'orderId':
+                Responsible.update().where(OrderedBy.c.orderId == order['orderId']).values({key: order[key]}).execute()
+    
+        return jsonify({'status': 'ok'})
+
+    except exc.SQLAlchemyError as e:
+        return jsonify({'status': 'error',
+                        'message': e.message})
         
