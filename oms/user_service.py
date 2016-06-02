@@ -7,8 +7,11 @@ from sqlalchemy import exc
 
 @app.route('/getOrdersForUser', methods = ['GET'])
 def get_order_for_user():
-    uid = request.args.get('uid')
-    orders = OrderedBy.select(OrderedBy.c.uid == uid).execute().fetchall()
-    print orders
-    order_ids = []
-    return 'hurra'
+    try:
+        uid = request.args.get('uid')
+        orders = OrderedBy.select(OrderedBy.c.uid == uid).execute().fetchall()
+        order_ids = [order['orderId'] for order in orders]
+        return jsonify({'orders': order_ids})
+    except exc.SQLAlchemyError as e:
+        return jsonify({'status': 'error',
+                        'message': e.message})
