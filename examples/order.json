@@ -6,10 +6,10 @@
 		"orderDate": "2016-05-18 12:00:00",
 		"plannedDate": "2016-05-18 12:00:00",
 		"user": {
-			"uid": "UUID1",
+			"uid": "uid1",
 			"firstname": "Clint",
 			"lastname": "Eastwood",
-			"email": "clint@hollywood.biz"		
+			"email": "clint@hollywood.com"		
 		},
 		"items": [
 					{

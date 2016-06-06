@@ -22,7 +22,7 @@ def delete_order():
     
 
 @app.route('/getOrders', methods = ['GET'])
-def get_order_for_user():
+def get_orders():
     try:
         # order_id = request.args.get('orderId')
         status = request.args.get('status')
@@ -49,8 +49,8 @@ def get_order_for_user():
                         'message': e.message})
 
 
-@app.route('/getOrderStatus', methods = ['GET'])
-def get_order_status():
+@app.route('/getOrderData', methods = ['GET'])
+def get_order_data():
     order_id = request.args.get('orderId')
     try:
         order = Orders.select(Orders.c.orderId == order_id).execute().first()

@@ -10,7 +10,7 @@ Backend (RESTful service) for the EARK Order Management Tool
 Can be called without parameters in which case all orders are returned. Provide exactly one of the 
 specified parameter for filtering search results (further filtering should be done from the Anguler front-end). 
 
-**GET /getOrderStatus?orderId=\<orderId\>**
+**GET /getOrderData?orderId=\<orderId\>**
 
 **POST /newOrder**
 

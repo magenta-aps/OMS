@@ -5,6 +5,17 @@ from oms import app
 from db_model import *
 from sqlalchemy import exc
 
+"""
+@app.route('getPerson', methods = ['GET'])
+def get_person():
+    uid = request.args.get('uid')
+    person = Person.select().where(Person.c.uid == uid).execute().first()
+    person_dict = dict(zip(person))
+"""
+
+"""
+# Moved to order_service.py
+
 @app.route('/getOrders', methods = ['GET'])
 def get_order_for_user():
     try:
@@ -31,3 +42,4 @@ def get_order_for_user():
     except exc.SQLAlchemyError as e:
         return jsonify({'status': 'error',
                         'message': e.message})
+"""

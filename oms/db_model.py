@@ -38,15 +38,17 @@ def insert_user(user):
         Person.insert(user).execute()
         EndUser.insert({'uid': user['uid']}).execute()
 
-
+"""
 def sql_table_to_dict(sqlalchemy_table, property = None):
     if type(sqlalchemy_table) == ListType:
-        print 'ListType'
-        
+        # print 'ListType'
+        l = []
+        for i in sqlalchemy_table:
+            
     else:
-         print 'non list'
+         # print 'non list'
     return dict(zip(sqlalchemy_table.keys(), sqlalchemy_table.values()))
-
+"""
 
 
 ### Example of SELECT, INSERT, UPDATE and DELETE

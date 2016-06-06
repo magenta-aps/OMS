@@ -118,10 +118,13 @@ INSERT INTO EndUser VALUES ('uid3');
 
 INSERT INTO Archivist VALUES ('uid4');
 INSERT INTO Archivist VALUES ('uid5');
-
+/*
 INSERT INTO Orders VALUES ('orderUUID1', 'Hydrogen', NULL, '2016-05-18 12:00:00', '2016-05-19 13:00:00', '2016-07-18 15:00:00', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO Orders VALUES ('orderUUID2', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO Orders VALUES ('orderUUID3', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO OrderedBy VALUES ('uid1', 'orderUUID1', 'This is a note...');
 INSERT INTO OrderedBy VALUES ('uid1', 'orderUUID2', 'This is a note...');
 INSERT INTO OrderedBy VALUES ('uid2', 'orderUUID3', 'This is a note...');
+*/
+
+source insert_data.sql;
