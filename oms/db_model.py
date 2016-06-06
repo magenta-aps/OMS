@@ -19,6 +19,45 @@ Responsible = Table('Responsible', _metadata, autoload = True)
 BelongsTo = Table('BelongsTo', _metadata, autoload = True)
 
 # Helpful methods
+def get_order_data_helper(order_id):
+    order = Orders.select(Orders.c.orderId == order_id).execute().first()
+    ordered_by = OrderedBy.select(OrderedBy.c.orderId == order_id).execute().first()
+    responsible = Responsible.select(Responsible.c.uid == order_id).execute().first()
+    belongs_to = BelongsTo.select(BelongsTo.c.orderId == order_id).execute().fetchall()
+        
+    order_dict = dict(zip(order.keys(), order.values()))
+    sql_query_to_dict(belongs_to)
+    order_dict['endUserId'] = ordered_by['uid']
+    if responsible:
+        order_dict['assignee'] = responsible['uid']
+    else:
+        order_dict['assignee'] = 'none'
+        
+    order_dict['itemRefCodes'] = [b['refCode'] for b in belongs_to]
+     
+    return order_dict
+
+
+def insert_archivist(user):
+    """Insert archivist to DB if not already exists
+    
+    Keyword arguments:
+    user -- JSON containing the user details (see example)
+    
+    Example JSON:
+        {
+            "uid": "endUser-UUID1",
+            "firstname": "Clint",
+            "lastname": "Eastwood",
+            "email": "clint@hollywood.biz
+        }        
+    """
+    
+    if Archivist.select(Archivist.c.uid == user['uid']).execute().first() == None:
+        Person.insert(user).execute()
+        Archivist.insert({'uid': user['uid']}).execute()
+
+
 def insert_user(user):
     """Insert user to DB if not already exists
     

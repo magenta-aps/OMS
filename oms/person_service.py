@@ -28,21 +28,23 @@ def get_person():
         return jsonify({'status': 'error',
                         'message': e.message})
     
-"""
+
 @app.route('/newPerson', methods = ['POST'])
 def new_person():
     if not request.json:
         abort(400)
+    user = request.json
     try:
-        insert_user(request.json)
-        if request.json['type'] == 'enduser':
+        user_type = user.pop('type')
+        if user_type == 'enduser':
             # User is an EndUser
-            EndUser.insert({'uid': user['uid']}).execute()
-        else:
+            insert_user(user)
+        elif user_type == 'archivist':
             # User ia an archivist
-            Archivist.insert({'uid': user['uid']}).execute()
+            insert_archivist(user)
+        else:
+            return jsonify({'status': 'error', 'message': 'Incorrect type'})
         return jsonify({'status': 'ok'})
     except exc.SQLAlchemyError as e:
         return jsonify({'status': 'error',
-                        'message': e.message})
-""" 
+                        'message': e.message}) 

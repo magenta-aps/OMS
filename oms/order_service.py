@@ -42,7 +42,12 @@ def get_orders():
         else:
             orders = Orders.select().execute().fetchall()
         order_ids = [order['orderId'] for order in orders]
-        return jsonify({'orders': order_ids})
+
+        order_list = []
+        for order_id in order_ids:
+            order_dict = get_order_data_helper(order_id)            
+            order_list.append(order_dict)
+        return jsonify({'orders': order_list})
     except exc.SQLAlchemyError as e:
         return jsonify({'status': 'error',
                         'message': e.message})
@@ -52,21 +57,7 @@ def get_orders():
 def get_order_data():
     order_id = request.args.get('orderId')
     try:
-        order = Orders.select(Orders.c.orderId == order_id).execute().first()
-        ordered_by = OrderedBy.select(OrderedBy.c.orderId == order_id).execute().first()
-        responsible = Responsible.select(Responsible.c.uid == order_id).execute().first()
-        belongs_to = BelongsTo.select(BelongsTo.c.orderId == order_id).execute().fetchall()
-        
-        order_dict = dict(zip(order.keys(), order.values()))
-        sql_table_to_dict(belongs_to)
-        order_dict['endUserId'] = ordered_by['uid']
-        if responsible:
-            order_dict['assignee'] = responsible['uid']
-        else:
-            order_dict['assignee'] = 'none'
-        
-        order_dict['itemRefCodes'] = [b['refCode'] for b in belongs_to] 
-        
+        order_dict = get_order_data_helper(order_id)
         return jsonify(order_dict)
     except exc.SQLAlchemyError as e:
         return jsonify({'status': 'error',

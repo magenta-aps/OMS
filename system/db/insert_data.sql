@@ -86,7 +86,7 @@ CREATE TABLE `EndUser` (
 
 LOCK TABLES `EndUser` WRITE;
 /*!40000 ALTER TABLE `EndUser` DISABLE KEYS */;
-INSERT INTO `EndUser` VALUES ('uid1'),('uid2'),('uid3');
+INSERT INTO `EndUser` VALUES ('uid1'),('uid12'),('uid2'),('uid3');
 /*!40000 ALTER TABLE `EndUser` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -200,7 +200,7 @@ CREATE TABLE `Person` (
 
 LOCK TABLES `Person` WRITE;
 /*!40000 ALTER TABLE `Person` DISABLE KEYS */;
-INSERT INTO `Person` VALUES ('uid1','Clint','Eastwood','clint@hollywood.com'),('uid2','Bill','Clinton','bill@whitehouse.gov'),('uid3','Bruce','Lee','bruce@kungfu.org'),('uid4','Alex','T','alt@sa.dk'),('uid5','Anders Bo','Nielsen','abn@sa.dk');
+INSERT INTO `Person` VALUES ('uid1','Clint','Eastwood','clint@hollywood.com'),('uid12','Henry','Ford',NULL),('uid2','Bill','Clinton','bill@whitehouse.gov'),('uid3','Bruce','Lee','bruce@kungfu.org'),('uid4','Alex','T','alt@sa.dk'),('uid5','Anders Bo','Nielsen','abn@sa.dk');
 /*!40000 ALTER TABLE `Person` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -229,7 +229,7 @@ CREATE TABLE `Responsible` (
 
 LOCK TABLES `Responsible` WRITE;
 /*!40000 ALTER TABLE `Responsible` DISABLE KEYS */;
-INSERT INTO `Responsible` VALUES ('uid4','5472488a54ea4b6ab380aeb1ba748e42','Top priority','We have to fix this...'),('uid4','7bf0814442ed4eebba56e9372da107cb','We will have trouble providing this',NULL),('uid5','e807ea0b5be3413c9197c2917a02b994',NULL,NULL);
+INSERT INTO `Responsible` VALUES ('uid4','5472488a54ea4b6ab380aeb1ba748e42','Top priority','We have to fix this...'),('uid4','7bf0814442ed4eebba56e9372da107cb','We will have trouble providing this',NULL),('uid4','8ffe164cb4264488a389262e10e4d206',NULL,NULL),('uid5','e807ea0b5be3413c9197c2917a02b994',NULL,NULL);
 /*!40000 ALTER TABLE `Responsible` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -242,4 +242,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-06-06  9:58:06
+-- Dump completed on 2016-06-06 15:10:03
