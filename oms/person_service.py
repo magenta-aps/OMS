@@ -5,13 +5,14 @@ from oms import app
 from db_model import *
 from sqlalchemy import exc
 
-"""
-@app.route('getPerson', methods = ['GET'])
+
+@app.route('/getPerson', methods = ['GET'])
 def get_person():
     uid = request.args.get('uid')
     person = Person.select().where(Person.c.uid == uid).execute().first()
-    person_dict = dict(zip(person))
-"""
+    person_dict = sql_query_to_dict(person)
+    return jsonify(person_dict)
+    
 
 """
 # Moved to order_service.py
