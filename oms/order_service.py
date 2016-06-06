@@ -9,7 +9,6 @@ import uuid
 @app.route('/deleteOrder', methods = ['DELETE'])
 def delete_order():
     order_id = request.args.get('orderId')
-    print order_id
     order_items = BelongsTo.select(BelongsTo.c.orderId == order_id).execute().fetchall()
     try:
         Orders.delete().where(Orders.c.orderId == order_id).execute()
