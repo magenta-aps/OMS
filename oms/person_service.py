@@ -47,4 +47,21 @@ def new_person():
         return jsonify({'status': 'ok'})
     except exc.SQLAlchemyError as e:
         return jsonify({'status': 'error',
-                        'message': e.message}) 
+                        'message': e.message})
+        
+
+@app.route('/updatePerson', methods = ['PUT'])
+def update_person():
+    if not request.json:
+        abort(400)
+    person = request.json
+    try:
+        for key in person:
+            if key != 'uid':
+                Person.update().where(Person.c.uid == person['uid']).values({key: person[key]}).execute()
+        return jsonify({'status': 'ok'})
+    except exc.SQLAlchemyError as e:
+        return jsonify({'status': 'error',
+                        'message': e.message})
+        
+ 

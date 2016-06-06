@@ -28,5 +28,6 @@ Include whatever properties you wish to change.
 **GET /getPerson?uid=\<uid\>**
 
 **POST /newPerson**
+
 Consumes JSON like [this](https://github.com/magenta-aps/OMS/blob/develop/examples/person.json) (if the user type is an enduser). 
 If the person is an archivist the type must be set to "archivist" 

@@ -113,7 +113,6 @@ def update_order():
     order = request.json
     try:
         for key in order:
-            print key
             if key in Orders.c.keys() and key != 'orderId':
                 Orders.update().where(Orders.c.orderId == order['orderId']).values({key: order[key]}).execute()
             if key == 'endUserOrderNote':
