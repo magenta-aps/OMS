@@ -16,6 +16,21 @@ def delete_person():
                         'message': e.message})
 
 
+@app.route('/getArchivists', methods = ['GET'])
+def get_archivists():
+    # Should be refactored - use join or make 'normal' SQL query instead
+    try:
+        archivist_list = []
+        archivists = Archivist.select().execute().fetchall()
+        for a in archivists:
+            archivist_list.append(Person.select(Person.c.uid == a['uid']).execute().first())
+        archivist_dict = sql_query_to_dict(archivist_list, 'archivists')
+        return jsonify(archivist_dict)
+    except exc.SQLAlchemyError as e:
+        return jsonify({'status': 'error',
+                        'message': e.message})
+    
+
 @app.route('/getPerson', methods = ['GET'])
 def get_person():
     uid = request.args.get('uid')

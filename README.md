@@ -25,6 +25,10 @@ Include whatever properties you wish to change.
 
 **DELETE /deletePerson?uid=\<uid\>**
 
+**GET /getArchivists**
+
+Gets all the archivists.
+
 **GET /getPerson?uid=\<uid\>**
 
 **POST /newPerson**
