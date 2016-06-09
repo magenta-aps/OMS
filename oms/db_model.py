@@ -24,10 +24,13 @@ def get_order_data_helper(order_id):
     ordered_by = OrderedBy.select(OrderedBy.c.orderId == order_id).execute().first()
     responsible = Responsible.select(Responsible.c.uid == order_id).execute().first()
     belongs_to = BelongsTo.select(BelongsTo.c.orderId == order_id).execute().fetchall()
+    person = Person.select(Person.c.uid == ordered_by['uid']).execute().first() 
         
     order_dict = dict(zip(order.keys(), order.values()))
+    person_dict = dict(zip(person.keys(), person.values()))
+    
     sql_query_to_dict(belongs_to)
-    order_dict['endUserId'] = ordered_by['uid']
+    order_dict['endUser'] = person_dict
     if responsible:
         order_dict['assignee'] = responsible['uid']
     else:
