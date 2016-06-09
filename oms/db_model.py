@@ -22,7 +22,7 @@ BelongsTo = Table('BelongsTo', _metadata, autoload = True)
 def get_order_data_helper(order_id):
     order = Orders.select(Orders.c.orderId == order_id).execute().first()
     ordered_by = OrderedBy.select(OrderedBy.c.orderId == order_id).execute().first()
-    responsible = Responsible.select(Responsible.c.uid == order_id).execute().first()
+    responsible = Responsible.select(Responsible.c.orderId == order_id).execute().first()
     belongs_to = BelongsTo.select(BelongsTo.c.orderId == order_id).execute().fetchall()
     person = Person.select(Person.c.uid == ordered_by['uid']).execute().first() 
         
@@ -32,7 +32,7 @@ def get_order_data_helper(order_id):
     sql_query_to_dict(belongs_to)
     order_dict['endUser'] = person_dict
     if responsible:
-        order_dict['assignee'] = responsible['uid']
+        order_dict['assignee'] = sql_query_to_dict(responsible)
     else:
         order_dict['assignee'] = 'none'
         
