@@ -1,6 +1,12 @@
 # OMS
 Backend (RESTful service) for the EARK Order Management Tool
 
+## Items Service
+
+**GET /getItems?orderId=\<orderId\>**
+
+Gets all the items belonging to the given orderId.
+
 ## Order Service
 
 **DELETE /deleteOrder?orderId=\<orderId\>**
