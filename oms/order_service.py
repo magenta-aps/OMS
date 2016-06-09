@@ -111,6 +111,9 @@ def update_order():
     if not request.json:
         abort(400)
     order = request.json
+    if 'assignee' in order:
+        uid = order.pop('assignee')
+        order['uid'] = uid
     try:
         for key in order:
             if key in Orders.c.keys() and key != 'orderId':
@@ -118,7 +121,7 @@ def update_order():
             if key == 'endUserOrderNote':
                 OrderedBy.update().where(OrderedBy.c.orderId == order['orderId']).values({key: order[key]}).execute()
             if key in Responsible.c.keys() and key != 'orderId':
-                Responsible.update().where(OrderedBy.c.orderId == order['orderId']).values({key: order[key]}).execute()
+                Responsible.update().where(Responsible.c.orderId == order['orderId']).values({key: order[key]}).execute()
     
         return jsonify({'status': 'ok'})
 
