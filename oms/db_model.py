@@ -32,7 +32,8 @@ def get_order_data_helper(order_id):
     sql_query_to_dict(belongs_to)
     order_dict['endUser'] = person_dict
     if responsible:
-        order_dict['assignee'] = sql_query_to_dict(responsible)
+        uid = responsible['uid']
+        order_dict['assignee'] = sql_query_to_dict(Person.select(Person.c.uid == uid).execute().first())
     else:
         order_dict['assignee'] = 'none'
         
