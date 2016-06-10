@@ -1,6 +1,8 @@
 {
-	"orderId": "fixedUUID",
-	"title": "This is the new title",
+	"orderId": "e807ea0b5be3413c9197c2917a02b994",
+	"title": "This is the new title of the order",
+	"origin": "email",
+	"orderDate": "2015-05-18 12:00:00",
 	"endUserOrderNote": "A new end user note",
 	"validationDate": "2016-05-18 12:00:00",
 	"plannedDate": "2017-05-18 12:00:00",
