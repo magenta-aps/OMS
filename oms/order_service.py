@@ -131,6 +131,8 @@ def update_order():
                             Responsible.update().where(Responsible.c.orderId == order['orderId']).values({key: order[key]}).execute()
                     else:
                         Responsible.insert({'orderId': order['orderId'], 'uid': order['uid']}).execute()
+                else:
+                    Responsible.update().where(Responsible.c.orderId == order['orderId']).values({key: order[key]}).execute()
     
         return jsonify({'status': 'ok'})
 
