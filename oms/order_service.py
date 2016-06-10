@@ -121,7 +121,16 @@ def update_order():
             if key == 'endUserOrderNote':
                 OrderedBy.update().where(OrderedBy.c.orderId == order['orderId']).values({key: order[key]}).execute()
             if key in Responsible.c.keys() and key != 'orderId':
-                Responsible.update().where(Responsible.c.orderId == order['orderId']).values({key: order[key]}).execute()
+                if key == 'uid':
+                    responsible = Responsible.select(Responsible.c.orderId == order['orderId']).execute().first()
+                    # Should check if orderId already there - otherwise insert
+                    if responsible:
+                        if uid == 'none':
+                            Responsible.delete().where(Responsible.c.orderId == order['orderId']).execute()
+                        else:
+                            Responsible.update().where(Responsible.c.orderId == order['orderId']).values({key: order[key]}).execute()
+                    else:
+                        Responsible.insert({'orderId': order['orderId'], 'uid': order['uid']}).execute()
     
         return jsonify({'status': 'ok'})
 
