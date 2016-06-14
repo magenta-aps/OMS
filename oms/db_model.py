@@ -37,8 +37,10 @@ def get_order_data_helper(order_id):
     else:
         order_dict['assignee'] = 'none'
         
-    order_dict['itemRefCodes'] = [b['refCode'] for b in belongs_to]
-     
+    items = []
+    for refCode in [b['refCode'] for b in belongs_to]:
+        items.append(sql_query_to_dict(OrderItems.select(OrderItems.c.refCode == refCode).execute().first()))
+    order_dict['items'] = items 
     return order_dict
 
 
