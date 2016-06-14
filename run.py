@@ -1,6 +1,6 @@
-__author__ = 'lanre'
+__authors__ = 'lanre, andreas'
 
-from app import app
+from oms import app
 app.run(debug=True)
 
 
