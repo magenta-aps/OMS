@@ -190,6 +190,7 @@ CREATE TABLE `Person` (
   `firstname` varchar(50) DEFAULT NULL,
   `lastname` varchar(50) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
+  `password` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -200,7 +201,7 @@ CREATE TABLE `Person` (
 
 LOCK TABLES `Person` WRITE;
 /*!40000 ALTER TABLE `Person` DISABLE KEYS */;
-INSERT INTO `Person` VALUES ('uid1','Clint','Eastwood','clint@hollywood.com'),('uid12','Henry','Ford',NULL),('uid2','Bill','Clinton','bill@whitehouse.gov'),('uid3','Bruce','Lee','bruce@kungfu.org'),('uid4','John','T','john@hollywood.biz'),('uid5','Chuck','Norris','chuck@karate.org');
+INSERT INTO `Person` VALUES ('uid1','Clint','Eastwood','clint@hollywood.com','eark'),('uid12','Henry','Ford',NULL,'eark'),('uid2','Bill','Clinton','bill@whitehouse.gov','eark'),('uid3','Bruce','Lee','bruce@kungfu.org','eark'),('uid4','John','T','john@hollywood.biz','eark'),('uid5','Chuck','Norris','chuck@karate.org','eark');
 /*!40000 ALTER TABLE `Person` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -242,4 +243,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-06-06 15:10:03
+-- Dump completed on 2016-06-14 14:59:27

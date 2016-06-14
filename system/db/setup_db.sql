@@ -14,7 +14,8 @@ CREATE TABLE Person(
 	uid VARCHAR(32) PRIMARY KEY,
 	firstname VARCHAR(50),
 	lastname VARCHAR(50),
-	email VARCHAR(255)
+	email VARCHAR(255),
+	password VARCHAR(255)
 );
 
 DROP TABLE IF EXISTS EndUser;
@@ -105,12 +106,12 @@ CREATE TABLE BelongsTo(
 		ON UPDATE CASCADE	
 );
 
-/* For testing */
-INSERT INTO Person VALUES ('uid1', 'Clint', 'Eastwood', 'clint@hollywood.com');
-INSERT INTO Person VALUES ('uid2', 'Bill', 'Clinton', 'bill@whitehouse.gov');
-INSERT INTO Person VALUES ('uid3', 'Bruce', 'Lee', 'bruce@kungfu.org');
-INSERT INTO Person VALUES ('uid4', 'Alex', 'T', 'alt@sa.dk');
-INSERT INTO Person VALUES ('uid5', 'Anders Bo', 'Nielsen', 'abn@sa.dk');
+/* For testing 
+INSERT INTO Person VALUES ('uid1', 'Clint', 'Eastwood', 'clint@hollywood.com', 'eark');
+INSERT INTO Person VALUES ('uid2', 'Bill', 'Clinton', 'bill@whitehouse.gov', 'eark');
+INSERT INTO Person VALUES ('uid3', 'Bruce', 'Lee', 'bruce@kungfu.org', 'eark');
+INSERT INTO Person VALUES ('uid4', 'John', 'T', 'john@hollywood.biz', 'eark');
+INSERT INTO Person VALUES ('uid5', 'Chuck', 'Norris', 'chuck@hollywood.biz', 'eark');
 
 INSERT INTO EndUser VALUES ('uid1');
 INSERT INTO EndUser VALUES ('uid2');
@@ -118,6 +119,7 @@ INSERT INTO EndUser VALUES ('uid3');
 
 INSERT INTO Archivist VALUES ('uid4');
 INSERT INTO Archivist VALUES ('uid5');
+*/
 /*
 INSERT INTO Orders VALUES ('orderUUID1', 'Hydrogen', NULL, '2016-05-18 12:00:00', '2016-05-19 13:00:00', '2016-07-18 15:00:00', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO Orders VALUES ('orderUUID2', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);

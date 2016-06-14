@@ -65,6 +65,32 @@ def new_person():
                         'message': e.message})
         
 
+@app.route('/login', methods = ['POST'])
+def login():
+    if not request.json:
+        abort(400)
+    try:
+        uid = request.json['uid']
+        pwd = request.json['password']
+        
+        person = Person.select(Person.c.uid == uid).execute().first()
+        
+        if not person or not person['password'] == pwd:
+            return jsonify({'status': 'ok', 'login': 'failed'})
+        
+        enduser = EndUser.select(EndUser.c.uid == uid).execute().first()
+        
+        if enduser:
+            return jsonify({'firstname': person['firstname'], 'lastname': person['lastname'], 'role': 'enduser'})
+        else:
+            # Must be archivist
+            return jsonify({'firstname': person['firstname'], 'lastname': person['lastname'], 'role': 'archivist'})
+        
+    except exc.SQLAlchemyError as e:
+        return jsonify({'status': 'error',
+                        'message': e.message})
+    
+
 @app.route('/updatePerson', methods = ['PUT'])
 def update_person():
     if not request.json:
