@@ -44,6 +44,16 @@ def get_order_data_helper(order_id):
     return order_dict
 
 
+def get_role(userName):
+        enduser = EndUser.select(EndUser.c.userName == userName).execute().first()
+        
+        if enduser:
+            return "enduser"
+        else:
+            # Must be archivist
+            return "archivist"
+
+
 def insert_archivist(user):
     """Insert archivist to DB if not already exists
     

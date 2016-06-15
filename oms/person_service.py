@@ -37,6 +37,7 @@ def get_person():
     try:
         person = Person.select().where(Person.c.userName == userName).execute().first()
         person_dict = sql_query_to_dict(person)
+        person_dict['role'] = get_role(userName)
         # TODO: make similar methods to get EndUsers and Archivists
         return jsonify(person_dict)
     except exc.SQLAlchemyError as e:
@@ -78,13 +79,7 @@ def login():
         if not person or not person['password'] == pwd:
             return jsonify({'status': 'ok', 'login': 'failed'})
         
-        enduser = EndUser.select(EndUser.c.userName == userName).execute().first()
-        
-        if enduser:
-            return jsonify({'firstname': person['firstname'], 'lastname': person['lastname'], 'role': 'enduser'})
-        else:
-            # Must be archivist
-            return jsonify({'firstname': person['firstname'], 'lastname': person['lastname'], 'role': 'archivist'})
+        return jsonify({'firstname': person['firstname'], 'lastname': person['lastname'], 'role': get_role(userName)})
         
     except exc.SQLAlchemyError as e:
         return jsonify({'status': 'error',
