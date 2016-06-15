@@ -6,7 +6,7 @@
 		"orderDate": "2016-05-18 12:00:00",
 		"plannedDate": "2016-05-18 12:00:00",
 		"user": {
-			"uid": "uid1",
+			"userName": "userName1",
 			"firstname": "Clint",
 			"lastname": "Eastwood",
 			"email": "clint@hollywood.com"		

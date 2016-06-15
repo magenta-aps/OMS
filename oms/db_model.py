@@ -24,7 +24,7 @@ def get_order_data_helper(order_id):
     ordered_by = OrderedBy.select(OrderedBy.c.orderId == order_id).execute().first()
     responsible = Responsible.select(Responsible.c.orderId == order_id).execute().first()
     belongs_to = BelongsTo.select(BelongsTo.c.orderId == order_id).execute().fetchall()
-    person = Person.select(Person.c.uid == ordered_by['uid']).execute().first() 
+    person = Person.select(Person.c.userName == ordered_by['userName']).execute().first() 
         
     order_dict = dict(zip(order.keys(), order.values()))
     person_dict = dict(zip(person.keys(), person.values()))
@@ -32,8 +32,8 @@ def get_order_data_helper(order_id):
     sql_query_to_dict(belongs_to)
     order_dict['endUser'] = person_dict
     if responsible:
-        uid = responsible['uid']
-        order_dict['assignee'] = sql_query_to_dict(Person.select(Person.c.uid == uid).execute().first())
+        userName = responsible['userName']
+        order_dict['assignee'] = sql_query_to_dict(Person.select(Person.c.userName == userName).execute().first())
     else:
         order_dict['assignee'] = 'none'
         
@@ -52,16 +52,16 @@ def insert_archivist(user):
     
     Example JSON:
         {
-            "uid": "endUser-UUID1",
+            "userName": "endUser-UUID1",
             "firstname": "Clint",
             "lastname": "Eastwood",
             "email": "clint@hollywood.biz
         }        
     """
     
-    if Archivist.select(Archivist.c.uid == user['uid']).execute().first() == None:
+    if Archivist.select(Archivist.c.userName == user['userName']).execute().first() == None:
         Person.insert(user).execute()
-        Archivist.insert({'uid': user['uid']}).execute()
+        Archivist.insert({'userName': user['userName']}).execute()
 
 
 def insert_user(user):
@@ -72,16 +72,16 @@ def insert_user(user):
     
     Example JSON:
         {
-            "uid": "endUser-UUID1",
+            "userName": "endUser-UUID1",
             "firstname": "Clint",
             "lastname": "Eastwood",
             "email": "clint@hollywood.biz
         }        
     """
     
-    if EndUser.select(EndUser.c.uid == user['uid']).execute().first() == None:
+    if EndUser.select(EndUser.c.userName == user['userName']).execute().first() == None:
         Person.insert(user).execute()
-        EndUser.insert({'uid': user['uid']}).execute()
+        EndUser.insert({'userName': user['userName']}).execute()
 
 
 def sql_query_to_dict(sqlalchemy_table, property = None):
@@ -103,6 +103,6 @@ def sql_query_to_dict(sqlalchemy_table, property = None):
 ### Example of SELECT, INSERT, UPDATE and DELETE
 
 # Person.select().execute().fetchall()
-# OrderedBy.insert().execute({'uid':'uid1000', 'orderId':'orderId1'})
+# OrderedBy.insert().execute({'userName':'userName1000', 'orderId':'orderId1'})
 # Person.update().where(Person.c.firstname == 'Bill').values(lastname='ssdsd').execute()
-# Person.delete().where(Person.c.uid == 'uid1000').execute()
+# Person.delete().where(Person.c.userName == 'userName1000').execute()

@@ -23,9 +23,9 @@ DROP TABLE IF EXISTS `Archivist`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `Archivist` (
-  `uid` varchar(32) NOT NULL,
-  PRIMARY KEY (`uid`),
-  CONSTRAINT `Archivist_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `Person` (`uid`) ON DELETE CASCADE ON UPDATE CASCADE
+  `userName` varchar(32) NOT NULL,
+  PRIMARY KEY (`userName`),
+  CONSTRAINT `Archivist_ibfk_1` FOREIGN KEY (`userName`) REFERENCES `Person` (`userName`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -35,7 +35,7 @@ CREATE TABLE `Archivist` (
 
 LOCK TABLES `Archivist` WRITE;
 /*!40000 ALTER TABLE `Archivist` DISABLE KEYS */;
-INSERT INTO `Archivist` VALUES ('uid4'),('uid5');
+INSERT INTO `Archivist` VALUES ('userName4'),('userName5');
 /*!40000 ALTER TABLE `Archivist` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -74,9 +74,9 @@ DROP TABLE IF EXISTS `EndUser`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `EndUser` (
-  `uid` varchar(32) NOT NULL,
-  PRIMARY KEY (`uid`),
-  CONSTRAINT `EndUser_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `Person` (`uid`) ON DELETE CASCADE ON UPDATE CASCADE
+  `userName` varchar(32) NOT NULL,
+  PRIMARY KEY (`userName`),
+  CONSTRAINT `EndUser_ibfk_1` FOREIGN KEY (`userName`) REFERENCES `Person` (`userName`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -86,7 +86,7 @@ CREATE TABLE `EndUser` (
 
 LOCK TABLES `EndUser` WRITE;
 /*!40000 ALTER TABLE `EndUser` DISABLE KEYS */;
-INSERT INTO `EndUser` VALUES ('uid1'),('uid12'),('uid2'),('uid3');
+INSERT INTO `EndUser` VALUES ('userName1'),('userName12'),('userName2'),('userName3');
 /*!40000 ALTER TABLE `EndUser` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -125,12 +125,12 @@ DROP TABLE IF EXISTS `OrderedBy`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `OrderedBy` (
-  `uid` varchar(32) NOT NULL DEFAULT '',
+  `userName` varchar(32) NOT NULL DEFAULT '',
   `orderId` varchar(32) NOT NULL DEFAULT '',
   `endUserOrderNote` text,
-  PRIMARY KEY (`uid`,`orderId`),
+  PRIMARY KEY (`userName`,`orderId`),
   KEY `orderId` (`orderId`),
-  CONSTRAINT `OrderedBy_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `Person` (`uid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `OrderedBy_ibfk_1` FOREIGN KEY (`userName`) REFERENCES `Person` (`userName`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `OrderedBy_ibfk_2` FOREIGN KEY (`orderId`) REFERENCES `Orders` (`orderId`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -141,7 +141,7 @@ CREATE TABLE `OrderedBy` (
 
 LOCK TABLES `OrderedBy` WRITE;
 /*!40000 ALTER TABLE `OrderedBy` DISABLE KEYS */;
-INSERT INTO `OrderedBy` VALUES ('uid1','2a48e52cf7914fc886e8a632abf0826c','Please provide this order as fast as possible'),('uid1','5472488a54ea4b6ab380aeb1ba748e42','Please provide this order as fast as possible'),('uid1','7bf0814442ed4eebba56e9372da107cb','Please provide this order as fast as possible'),('uid2','60e69130145c45b99c67d211e4a1e4a2','Please provide this order as fast as possible'),('uid2','8ffe164cb4264488a389262e10e4d206','Please provide this order as fast as possible'),('uid2','d1e82d9e43764fdfa6dce3a93c00fa6c','Please provide this order as fast as possible'),('uid2','e6534b74840240cb9d51674554f4e78a','Please provide this order as fast as possible'),('uid3','73e01b045e1042e694e35835e6556ab1','Please provide this order as fast as possible'),('uid3','e807ea0b5be3413c9197c2917a02b994','Please provide this order as fast as possible'),('uid3','f835a35f013b4a2fa6952fb8175943ba','Please provide this order as fast as possible');
+INSERT INTO `OrderedBy` VALUES ('userName1','2a48e52cf7914fc886e8a632abf0826c','Please provide this order as fast as possible'),('userName1','5472488a54ea4b6ab380aeb1ba748e42','Please provide this order as fast as possible'),('userName1','7bf0814442ed4eebba56e9372da107cb','Please provide this order as fast as possible'),('userName2','60e69130145c45b99c67d211e4a1e4a2','Please provide this order as fast as possible'),('userName2','8ffe164cb4264488a389262e10e4d206','Please provide this order as fast as possible'),('userName2','d1e82d9e43764fdfa6dce3a93c00fa6c','Please provide this order as fast as possible'),('userName2','e6534b74840240cb9d51674554f4e78a','Please provide this order as fast as possible'),('userName3','73e01b045e1042e694e35835e6556ab1','Please provide this order as fast as possible'),('userName3','e807ea0b5be3413c9197c2917a02b994','Please provide this order as fast as possible'),('userName3','f835a35f013b4a2fa6952fb8175943ba','Please provide this order as fast as possible');
 /*!40000 ALTER TABLE `OrderedBy` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -186,12 +186,12 @@ DROP TABLE IF EXISTS `Person`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `Person` (
-  `uid` varchar(32) NOT NULL,
+  `userName` varchar(32) NOT NULL,
   `firstname` varchar(50) DEFAULT NULL,
   `lastname` varchar(50) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`uid`)
+  PRIMARY KEY (`userName`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -201,7 +201,7 @@ CREATE TABLE `Person` (
 
 LOCK TABLES `Person` WRITE;
 /*!40000 ALTER TABLE `Person` DISABLE KEYS */;
-INSERT INTO `Person` VALUES ('uid1','Clint','Eastwood','clint@hollywood.com','eark'),('uid12','Henry','Ford',NULL,'eark'),('uid2','Bill','Clinton','bill@whitehouse.gov','eark'),('uid3','Bruce','Lee','bruce@kungfu.org','eark'),('uid4','John','T','john@hollywood.biz','eark'),('uid5','Chuck','Norris','chuck@karate.org','eark');
+INSERT INTO `Person` VALUES ('userName1','Clint','Eastwood','clint@hollywood.com','eark'),('userName12','Henry','Ford',NULL,'eark'),('userName2','Bill','Clinton','bill@whitehouse.gov','eark'),('userName3','Bruce','Lee','bruce@kungfu.org','eark'),('userName4','John','T','john@hollywood.biz','eark'),('userName5','Chuck','Norris','chuck@karate.org','eark');
 /*!40000 ALTER TABLE `Person` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -213,13 +213,13 @@ DROP TABLE IF EXISTS `Responsible`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `Responsible` (
-  `uid` varchar(32) NOT NULL DEFAULT '',
+  `userName` varchar(32) NOT NULL DEFAULT '',
   `orderId` varchar(32) NOT NULL DEFAULT '',
   `publicNote` text,
   `privateNote` text,
-  PRIMARY KEY (`uid`,`orderId`),
+  PRIMARY KEY (`userName`,`orderId`),
   KEY `orderId` (`orderId`),
-  CONSTRAINT `Responsible_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `Person` (`uid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `Responsible_ibfk_1` FOREIGN KEY (`userName`) REFERENCES `Person` (`userName`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `Responsible_ibfk_2` FOREIGN KEY (`orderId`) REFERENCES `Orders` (`orderId`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -230,7 +230,7 @@ CREATE TABLE `Responsible` (
 
 LOCK TABLES `Responsible` WRITE;
 /*!40000 ALTER TABLE `Responsible` DISABLE KEYS */;
-INSERT INTO `Responsible` VALUES ('uid4','5472488a54ea4b6ab380aeb1ba748e42','Top priority','We have to fix this...'),('uid4','7bf0814442ed4eebba56e9372da107cb','We will have trouble providing this',NULL),('uid4','8ffe164cb4264488a389262e10e4d206',NULL,NULL),('uid5','e807ea0b5be3413c9197c2917a02b994',NULL,NULL);
+INSERT INTO `Responsible` VALUES ('userName4','5472488a54ea4b6ab380aeb1ba748e42','Top priority','We have to fix this...'),('userName4','7bf0814442ed4eebba56e9372da107cb','We will have trouble providing this',NULL),('userName4','8ffe164cb4264488a389262e10e4d206',NULL,NULL),('userName5','e807ea0b5be3413c9197c2917a02b994',NULL,NULL);
 /*!40000 ALTER TABLE `Responsible` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

@@ -7,9 +7,9 @@ from sqlalchemy import exc
 
 @app.route('/deletePerson', methods = ['DELETE'])
 def delete_person():
-    uid = request.args.get('uid')
+    userName = request.args.get('userName')
     try:
-        Person.delete().where(Person.c.uid == uid).execute()
+        Person.delete().where(Person.c.userName == userName).execute()
         return jsonify({'status': 'ok'})
     except exc.SQLAlchemyError as e:
         return jsonify({'status': 'error',
@@ -23,7 +23,7 @@ def get_archivists():
         archivist_list = []
         archivists = Archivist.select().execute().fetchall()
         for a in archivists:
-            archivist_list.append(Person.select(Person.c.uid == a['uid']).execute().first())
+            archivist_list.append(Person.select(Person.c.userName == a['userName']).execute().first())
         archivist_dict = sql_query_to_dict(archivist_list, 'archivists')
         return jsonify(archivist_dict)
     except exc.SQLAlchemyError as e:
@@ -33,9 +33,9 @@ def get_archivists():
 
 @app.route('/getPerson', methods = ['GET'])
 def get_person():
-    uid = request.args.get('uid')
+    userName = request.args.get('userName')
     try:
-        person = Person.select().where(Person.c.uid == uid).execute().first()
+        person = Person.select().where(Person.c.userName == userName).execute().first()
         person_dict = sql_query_to_dict(person)
         # TODO: make similar methods to get EndUsers and Archivists
         return jsonify(person_dict)
@@ -70,15 +70,15 @@ def login():
     if not request.json:
         abort(400)
     try:
-        uid = request.json['uid']
+        userName = request.json['userName']
         pwd = request.json['password']
         
-        person = Person.select(Person.c.uid == uid).execute().first()
+        person = Person.select(Person.c.userName == userName).execute().first()
         
         if not person or not person['password'] == pwd:
             return jsonify({'status': 'ok', 'login': 'failed'})
         
-        enduser = EndUser.select(EndUser.c.uid == uid).execute().first()
+        enduser = EndUser.select(EndUser.c.userName == userName).execute().first()
         
         if enduser:
             return jsonify({'firstname': person['firstname'], 'lastname': person['lastname'], 'role': 'enduser'})
@@ -98,8 +98,8 @@ def update_person():
     person = request.json
     try:
         for key in person:
-            if key != 'uid':
-                Person.update().where(Person.c.uid == person['uid']).values({key: person[key]}).execute()
+            if key != 'userName':
+                Person.update().where(Person.c.userName == person['userName']).values({key: person[key]}).execute()
         return jsonify({'status': 'ok'})
     except exc.SQLAlchemyError as e:
         return jsonify({'status': 'error',

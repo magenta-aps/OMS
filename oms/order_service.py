@@ -28,7 +28,7 @@ def get_orders():
         not_status = request.args.get('notStatus')
         print not_status
         assignee = request.args.get('assignee')
-        uid = request.args.get('uid')
+        userName = request.args.get('userName')
         
         # Further filtering should be done from the front-end
         if status:
@@ -36,9 +36,9 @@ def get_orders():
         elif not_status:
             orders = Orders.select(Orders.c.orderStatus != not_status).execute().fetchall()
         elif assignee:
-            orders = Responsible.select(Responsible.c.uid == assignee).execute().fetchall()
-        elif uid:
-            orders = OrderedBy.select(OrderedBy.c.uid == uid).execute().fetchall()
+            orders = Responsible.select(Responsible.c.userName == assignee).execute().fetchall()
+        elif userName:
+            orders = OrderedBy.select(OrderedBy.c.userName == userName).execute().fetchall()
         else:
             orders = Orders.select().execute().fetchall()
         order_ids = [order['orderId'] for order in orders]
@@ -91,7 +91,7 @@ def new_order():
             BelongsTo.insert({'orderId': order['orderId'], 'refCode': item['refCode']}).execute()
             
         # Relations
-        OrderedBy.insert({'orderId': order['orderId'], 'uid': user['uid'], 'endUserOrderNote': endUserOrderNote}).execute()
+        OrderedBy.insert({'orderId': order['orderId'], 'userName': user['userName'], 'endUserOrderNote': endUserOrderNote}).execute()
                 
         return jsonify({'status': 'ok',
                         'orderId': order['orderId']})
@@ -112,8 +112,8 @@ def update_order():
         abort(400)
     order = request.json
     if 'assignee' in order:
-        uid = order.pop('assignee')
-        order['uid'] = uid
+        userName = order.pop('assignee')
+        order['userName'] = userName
     try:
         for key in order:
             if key in Orders.c.keys() and key != 'orderId':
@@ -121,16 +121,16 @@ def update_order():
             if key == 'endUserOrderNote':
                 OrderedBy.update().where(OrderedBy.c.orderId == order['orderId']).values({key: order[key]}).execute()
             if key in Responsible.c.keys() and key != 'orderId':
-                if key == 'uid':
+                if key == 'userName':
                     responsible = Responsible.select(Responsible.c.orderId == order['orderId']).execute().first()
                     # Should check if orderId already there - otherwise insert
                     if responsible:
-                        if uid == 'none':
+                        if userName == 'none':
                             Responsible.delete().where(Responsible.c.orderId == order['orderId']).execute()
                         else:
                             Responsible.update().where(Responsible.c.orderId == order['orderId']).values({key: order[key]}).execute()
                     else:
-                        Responsible.insert({'orderId': order['orderId'], 'uid': order['uid']}).execute()
+                        Responsible.insert({'orderId': order['orderId'], 'userName': order['userName']}).execute()
                 else:
                     Responsible.update().where(Responsible.c.orderId == order['orderId']).values({key: order[key]}).execute()
     

@@ -11,7 +11,7 @@ Gets all the items belonging to the given orderId.
 
 **DELETE /deleteOrder?orderId=\<orderId\>**
 
-**GET /getOrders?uid=\<uid\>&status=\<status\>&notStatus=\<status\>&assignee=\<assignee\>**
+**GET /getOrders?userName=\<userName\>&status=\<status\>&notStatus=\<status\>&assignee=\<assignee\>**
 
 Can be called without parameters in which case all orders are returned. Provide exactly one of the 
 specified parameter for filtering search results (further filtering should be done from the Anguler front-end). 
@@ -29,13 +29,13 @@ Include whatever properties you wish to change.
 
 ## Person Service
 
-**DELETE /deletePerson?uid=\<uid\>**
+**DELETE /deletePerson?userName=\<userName\>**
 
 **GET /getArchivists**
 
 Gets all the archivists.
 
-**GET /getPerson?uid=\<uid\>**
+**GET /getPerson?userName=\<userName\>**
 
 **POST /newPerson**
 

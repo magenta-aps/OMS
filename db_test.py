@@ -12,8 +12,8 @@ OrderedBy = db_model.OrderedBy
 Responsible = db_model.Responsible
 BelongsTo = db_model.BelongsTo
 
-# q = join(Person, EndUser, EndUser.c.uid).select()
+# q = join(Person, EndUser, EndUser.c.userName).select()
 
 # Person.select('sds').execute()
 
-# Orders.join(OrderedBy).select().where(Orders.c.orderId == OrderedBy.c.orderId and OrderedBy.uid == 'uid1').execute().fetchall()
+# Orders.join(OrderedBy).select().where(Orders.c.orderId == OrderedBy.c.orderId and OrderedBy.userName == 'userName1').execute().fetchall()
