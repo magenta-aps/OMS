@@ -9,56 +9,43 @@
 			"userName": "userName1",
 			"firstname": "Clint",
 			"lastname": "Eastwood",
-			"email": "clint@hollywood.com"
+			"email": "clint@hollywood.com"		
 		},
 		"items": [
-			{
-				"packageId": "95ac2ee1-b667-4684-a31a-6afbd77c2493",
-				"items": [
-					{
-						"title": "Albert Einstein",
-						"packageId": "95ac2ee1-b667-4684-a31a-6afbd77c2493",
-						"confidential": true,
-						"path": "95ac2ee1-b667-4684-a31a-6afbd77c2493/submission/representations/docs/data/Albert Einstein.pdf",
-						"contentType": "application/pdf",
-						"size": 2295020
-					},
-					{
-						"title": "Albert Einstein",
-						"packageId": "95ac2ee1-b667-4684-a31a-6afbd77c2493",
-						"confidential": true,
-						"path": "95ac2ee1-b667-4684-a31a-6afbd77c2493/representations/docs_mig-1/data/Albert Einstein.pdf",
-						"contentType": "application/pdf",
-						"size": 1429869
-					}
-				]
-			},
-			{
-				"packageId": "238ef649-89a2-4892-8c31-9174ea2c533e",
-				"items": [
-					{
-						"title": "General relativity",
-						"packageId": "238ef649-89a2-4892-8c31-9174ea2c533e",
-						"confidential": true,
-						"path": "238ef649-89a2-4892-8c31-9174ea2c533e/representations/docs_mig-1/data/General relativity.pdf",
-						"contentType": "application/pdf",
-						"size": 4851128
-					}
-				]
-			},
-			{
-				"packageId": "46df0610-eaeb-4096-9a13-46531ad563d2",
-				"items": [
-					{
-						"title": "General relativity",
-						"packageId": "46df0610-eaeb-4096-9a13-46531ad563d2",
-						"confidential": true,
-						"path": "46df0610-eaeb-4096-9a13-46531ad563d2/submission/representations/docs/data/General relativity.pdf",
-						"contentType": "application/pdf",
-						"size": 1265351
-					}
-				]
-			}
+				{
+					"packageId":"46df0610-bbc4-8893-3e4c-46531ad563d2",
+					"items":[
+							{
+								"title":"General relativity",
+								"packageId":"46df0610-bbc4-8893-3e4c-46531ad563d2",
+								"confidential":true,
+								"path":"path/to/General relativity.pdf",
+								"contentType":"application/pdf",
+								"size":1265351
+							},
+							{
+								"title":"Special relativity",
+								"packageId":"46df0610-bbc4-8893-3e4c-46531ad563d2",
+								"confidential":false,
+								"path":"path/to/Special relativity.pdf",
+								"contentType":"application/pdf",
+								"size":1269951
+							}
+					]
+				},
+				{
+					"packageId":"22de161d-ggyj-2048-9a13-41131ab523d",
+					"items":[
+							{
+								"title":"Nuclear Physics",
+								"packageId":"22de161d-ggyj-2048-9a13-41131ab523d",
+								"confidential":false,
+								"path":"path/to/Nuclear Physics.pdf",
+								"contentType":"application/pdf",
+								"size":2295020
+							}
+					]
+				}					
 		]
 	}
 }
