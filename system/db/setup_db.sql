@@ -58,7 +58,12 @@ CREATE TABLE OrderItems(
 	title VARCHAR(255),
 	aipURI VARCHAR(32),
 	aipTitle VARCHAR(32),
-	levelOfDescription TEXT
+	levelOfDescription TEXT,
+	packageId VARCHAR(50),
+	path VARCHAR(255),
+	contentType VARCHAR(50),
+	size INT,
+	confidential BOOLEAN
 );
 
 
@@ -129,4 +134,5 @@ INSERT INTO OrderedBy VALUES ('userName1', 'orderUUID2', 'This is a note...');
 INSERT INTO OrderedBy VALUES ('userName2', 'orderUUID3', 'This is a note...');
 */
 
-source insert_data.sql;
+/*source insert_data.sql;*/
+source dump_adaptedToNewOrderItems.sql;

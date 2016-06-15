@@ -71,7 +71,7 @@ def new_order():
 
     order = request.json['order']
     user = order.pop('user', None)
-    items = order.pop('items', None) 
+    packages = order.pop('items', None) 
     endUserOrderNote = order.pop('endUserOrderNote', None)
     
     try:
@@ -84,10 +84,18 @@ def new_order():
         Orders.insert(order).execute()
         
         # Insert the order items
-        for item in items:
-            item['refCode'] = uuid.uuid4().hex
-            OrderItems.insert(item).execute()
-            BelongsTo.insert({'orderId': order['orderId'], 'refCode': item['refCode']}).execute()
+        for package in packages:
+            packageId = package['packageId']
+            items = package['items']
+            for item in items:
+                # "Old" values
+                item['refCode'] = uuid.uuid4().hex
+                item['aipTitle'] = None
+                item['aipURI'] = item['path'] # Should be changed
+                item['levelOfDescription'] = 'package'
+                
+                OrderItems.insert(item).execute()
+                BelongsTo.insert({'orderId': order['orderId'], 'refCode': item['refCode']}).execute()
             
         # Relations
         OrderedBy.insert({'orderId': order['orderId'], 'userName': user['userName'], 'endUserOrderNote': endUserOrderNote}).execute()
