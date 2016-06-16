@@ -40,6 +40,15 @@ def get_order_data_helper(order_id):
     items = []
     for refCode in [b['refCode'] for b in belongs_to]:
         items.append(sql_query_to_dict(OrderItems.select(OrderItems.c.refCode == refCode).execute().first()))
+
+    for item in items:
+        if item['confidential'] == 0:
+            item['confidential'] = False
+        elif item['confidential'] == 1:
+            item['confidential'] = True
+        else:
+            print 'WARN: confidential not set'
+
     order_dict['items'] = items 
     return order_dict
 
