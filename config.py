@@ -1,2 +1,2 @@
 # SQLALCHEMY_DATABASE_URI = 'mysql://andreas:hemmeligt@localhost/temp'
-SQLALCHEMY_DATABASE_URI = 'mysql://andreas:hemmeligt@192.168.10.107/oms'
+SQLALCHEMY_DATABASE_URI = 'mysql://andreas:hemmeligt@10.10.136.141/oms'
