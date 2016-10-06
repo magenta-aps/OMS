@@ -3,9 +3,9 @@
  * Author: Andreas Kring <andreas@magenta.dk>
  * */
 
-DROP DATABASE IF EXISTS temp;
-CREATE DATABASE temp default character set utf8 default collate utf8_general_ci;
-USE temp;
+DROP DATABASE IF EXISTS oms;
+CREATE DATABASE oms default character set utf8 default collate utf8_general_ci;
+USE oms;
 
 /* Entity sets - see E/R diagram */
 
@@ -134,5 +134,5 @@ INSERT INTO OrderedBy VALUES ('userName1', 'orderUUID2', 'This is a note...');
 INSERT INTO OrderedBy VALUES ('userName2', 'orderUUID3', 'This is a note...');
 */
 
-/*source insert_data.sql;*/
+/* source insert_data.sql; */
 source dump_adaptedToNewOrderItems.sql;
