@@ -6,14 +6,12 @@ from flask import jsonify, request, abort
 
 # Hard-coded DB settings until the properties stuff is done
 DB_HOST = 'localhost'
-DB_USER = 'andreas'
-DB_PWD = ''
+DB_USER = 'eark'
+DB_PWD = 'eark'
 DB_NAME = 'oms'
 
 # connection = None
-
 conn = MySQLConnector(properties...)
-
 
 @app.route('/insert', methods = ['POST'])
 def insert_orders():
