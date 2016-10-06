@@ -201,7 +201,7 @@ CREATE TABLE `Person` (
 
 LOCK TABLES `Person` WRITE;
 /*!40000 ALTER TABLE `Person` DISABLE KEYS */;
-INSERT INTO `Person` VALUES ('clint','Clint','Eastwood','clint@hollywood.com','eark'),('henry','Henry','Ford',NULL,'eark'),('bill','Bill','Clinton','bill@whitehouse.gov','eark'),('bruce','Bruce','Lee','bruce@kungfu.org','eark'),('john','John','T','john@hollywood.biz','eark'),('chuck','Chuck','Norris','chuck@karate.org','eark');
+INSERT INTO `Person` VALUES ('clint','Clint','Eastwood','clint@hollywood.com','eark'),('henry','Henry','Ford',NULL,'eark'),('bill','Bill','Clinton','bill@whitehouse.gov','eark'),('bruce','Bruce','Lee','bruce@kungfu.org','eark'),('john','John','Travolta','john@hollywood.biz','eark'),('chuck','Chuck','Norris','chuck@karate.org','eark');
 /*!40000 ALTER TABLE `Person` ENABLE KEYS */;
 UNLOCK TABLES;
 
