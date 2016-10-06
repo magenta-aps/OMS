@@ -1,4 +1,4 @@
-LOGIN_URL=http://localhost:8000/earkweb/admin/login/
+LOGIN_URL=http://localhost:8001/earkweb/admin/login/
 YOUR_USER='eark'
 YOUR_PASS='eark'
 COOKIES=cookies/cookies.txt
@@ -17,11 +17,11 @@ $CURL_BIN \
     -X POST $LOGIN_URL
 
 
-#echo -n " do something while logged in ..."
-#
-## Query an order status
-#
-#$CURL_BIN -b $DJANGO_TOKEN http://localhost:8000/earkweb/search/order_status?process_id=7abd910e-a05e-4e51-9ca6-53dea71c9fb5
-#
-#echo " logout"
+echo -n " do something while logged in ..."
+
+# Query an order status
+
+$CURL_BIN -b $DJANGO_TOKEN http://localhost:8001/earkweb/search/order_status?process_id=b62a7d5e-b403-461e-8258-5ae811fa17bc
+
+echo " logout"
 rm $COOKIES

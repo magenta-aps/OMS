@@ -5,8 +5,8 @@ from db_model import *
 from sqlalchemy import exc
 import time
 
-EARKWEB_LOGIN_URL = 'http://localhost:8000/earkweb/admin/login/'
-SUBMIT_ORDER_URL = 'http://localhost:8000/earkweb/search/submit_order/' 
+EARKWEB_LOGIN_URL = 'http://localhost:8001/earkweb/admin/login/'
+SUBMIT_ORDER_URL = 'http://localhost:8001/earkweb/search/submit_order/' 
 
 # TODO: do not hard code username and password 
 USERNAME = 'eark'
