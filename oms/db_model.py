@@ -54,13 +54,12 @@ def get_order_data_helper(order_id):
 
 
 def get_role(userName):
-        enduser = EndUser.select(EndUser.c.userName == userName).execute().first()
+        archivist = Archivist.select(Archivist.c.userName == userName).execute().first()
         
-        if enduser:
-            return "enduser"
-        else:
-            # Must be archivist
+        if archivist:
             return "archivist"
+        else:
+            return "enduser"
 
 
 def insert_archivist(user):
