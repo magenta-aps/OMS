@@ -17,4 +17,3 @@ class MySQLConnector(object):
         connection.commit()
 
         connection.close()
-    
