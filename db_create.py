@@ -5,12 +5,12 @@ from sqlalchemy import create_engine, MetaData, Table
 
 """
 Base = automap_base()
-engine = create_engine('mysql://andreas:hemmeligt@localhost/temp')
+engine = create_engine('mysql://eark:eark@localhost/oms')
 
 Base.prepare(engine, reflect = True)
 """
 
-engine = create_engine('mysql://andreas:hemmeligt@localhost/temp', convert_unicode = True)
+engine = create_engine('mysql://eark:eark@localhost/oms', convert_unicode = True)
 metadata = MetaData(bind = engine)
 
 Person = Table('Person', metadata, autoload = True)
