@@ -15,7 +15,7 @@ print res.status_code
 #login_data = {'username':'eark', 'password':'eark', 'csrfmiddlewaretoken':csrftoken, 'next':'/hurra'}
 login_data = {'username':'eark', 'password':'eark', 'csrfmiddlewaretoken':csrftoken}
 
-res = client.post(URL, data = login_data, headers = {'Referer':URL})
+res = client.post(URL, data = login_data, headers = {'Referer':URL}, allow_redirects = False)
 print res.status_code
 
 jar = client.cookies
