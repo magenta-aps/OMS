@@ -69,13 +69,15 @@ def new_order():
     if not request.json:
         abort(400)
 
+    # TODO: should check request JSON
+
     order = request.json['order']
     user = order.pop('user', None)
     packages = order.pop('items', None) 
     endUserOrderNote = order.pop('endUserOrderNote', None)
     
     try:
-        # Check, if the user is aldready in the DB - and insert user if not
+        # Check, if the user is already in the DB - and insert user if not
         insert_user(user)
     
         # Insert order itself    
