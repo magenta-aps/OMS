@@ -78,7 +78,8 @@ def insert_archivist(user):
     """
     
     if Archivist.select(Archivist.c.userName == user['userName']).execute().first() == None:
-        Person.insert(user).execute()
+        if Person.select(Person.c.userName == user['userName']).execute().first() == None:  
+            Person.insert(user).execute()
         Archivist.insert({'userName': user['userName']}).execute()
 
 
