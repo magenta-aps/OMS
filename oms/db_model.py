@@ -99,7 +99,8 @@ def insert_user(user):
     """
     
     if EndUser.select(EndUser.c.userName == user['userName']).execute().first() == None:
-        Person.insert(user).execute()
+        if Person.select(Person.c.userName == user['userName']).execute().first() == None:
+            Person.insert(user).execute()
         EndUser.insert({'userName': user['userName']}).execute()
 
 
