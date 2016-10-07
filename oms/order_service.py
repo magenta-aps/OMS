@@ -5,6 +5,7 @@ from oms import app
 from db_model import *
 from sqlalchemy import exc
 import uuid
+from json_utils import is_dict_valid
 
 @app.route('/deleteOrder', methods = ['DELETE'])
 def delete_order():
@@ -69,11 +70,15 @@ def new_order():
     if not request.json:
         abort(400)
 
-    # TODO: should check request JSON
+    checker = JsonChecker(request.json)
+    if not checker.is_order_json_correct():
+        return checker.get_error_message()
 
+    # Everything ok - insert order into DB
+    
     order = request.json['order']
-    user = order.pop('user', None)
-    packages = order.pop('items', None) 
+    user = order.pop(u'user', None)
+    packages = order.pop('items', None)
     endUserOrderNote = order.pop('endUserOrderNote', None)
     
     try:
@@ -149,3 +154,60 @@ def update_order():
         return jsonify({'status': 'error',
                         'message': e.message})
         
+
+# TODO: refactor - write a more general method that can take a dictionary (with empty values) of the 
+# correct form and check if the incoming JSON keys matches the keys in this dictionary
+
+class JsonChecker(object):
+    
+    def __init__(self, json):
+        self.json = json
+        self.error_message_json = None
+    
+    def is_order_json_correct(self):
+    
+        json = self.json
+    
+        # Check if "order" is present in the JSON
+        if not is_dict_valid(json, ['order']):
+            self.json = jsonify({'success':False, 'message': 'The request JSON must have the keys: order'})
+            return False
+    
+        # Check if "order" contains the correct keys    
+        order = json['order']
+        mandatory_keys = ['title', 'origin', 'endUserOrderNote', 'orderDate', 'plannedDate', 'user', 'items']
+        if not is_dict_valid(order, mandatory_keys):
+            self.json = jsonify({'success':False, 'message':'The \'order\' must have the keys: ' + ', '.join(mandatory_keys)})
+            return False
+        
+        # Check if "user" contains the correct keys
+        user = order['user']
+        mandatory_keys = ['userName', 'firstname', 'lastname', 'email']
+        if not is_dict_valid(user, mandatory_keys):
+            self.json = jsonify({'success':False, 'message':'The \'user\' must have the keys: ' + ', '.join(mandatory_keys)})
+            return False
+        
+        # Check if the items contains a list of JSON objects
+        packages = order['items']
+        if not isinstance(packages, list):
+            self.json = jsonify({'success':False, 'message': 'The \'items\' in \'order\' must have list of JSON objects'})
+            return False
+        
+        # Check if the JSON objects in the order items list are ok
+        mandatory_keys = ['packageId', 'items']
+        itm_mandatory_keys = ['title', 'packageId', 'confidential', 'path', 'contentType', 'size']
+        for o in packages:
+            if not is_dict_valid(o, mandatory_keys):
+                self.json = jsonify({'success':False, 'message':'The \'items\' for each packageId must have the keys: ' + ', '.join(mandatory_keys)})
+                return False
+            # Check that the items are ok
+            for itm in o['items']:
+                if not is_dict_valid(itm, itm_mandatory_keys):
+                    self.json = jsonify({'success':False, 'message':'The (leaf) \'items\' for must have the keys: ' + ', '.join(itm_mandatory_keys)})
+                    return False
+        
+        return True
+    
+    
+    def get_error_message(self):
+        return self.json
