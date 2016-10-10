@@ -34,11 +34,21 @@ def delete_order():
 
 @app.route('/getOrders', methods = ['GET'])
 def get_orders():
+
+    # Check request parameters    
+    number_of_parameters = len(request.args.keys())
+    error_json = jsonify({'status':'error',
+                          'message':'The request should contain no parameters or exactly one of: status, notStatus, assignee or userName'})
+    if not number_of_parameters in [0, 1]:
+        return error_json
+    if number_of_parameters == 1:
+        parameter = request.args.keys()[0]
+        if not parameter in ['status', 'notStatus', 'assignee', 'userName']:
+            return error_json
+    
     try:
-        # order_id = request.args.get('orderId')
         status = request.args.get('status')
         not_status = request.args.get('notStatus')
-        print not_status
         assignee = request.args.get('assignee')
         userName = request.args.get('userName')
         
