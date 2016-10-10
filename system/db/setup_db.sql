@@ -49,7 +49,8 @@ CREATE TABLE Orders(
 	-- accessRestriction
 	orderStatus VARCHAR(10),
 	accessEndDate DATETIME,
-	deliveryFormat VARCHAR(30)
+	deliveryFormat VARCHAR(30),
+	processId VARCHAR(50)
 );
 
 DROP TABLE IF EXISTS OrderItems;
@@ -115,7 +116,7 @@ CREATE TABLE BelongsTo(
 INSERT INTO Person VALUES ('userName1', 'Clint', 'Eastwood', 'clint@hollywood.com', 'eark');
 INSERT INTO Person VALUES ('userName2', 'Bill', 'Clinton', 'bill@whitehouse.gov', 'eark');
 INSERT INTO Person VALUES ('userName3', 'Bruce', 'Lee', 'bruce@kungfu.org', 'eark');
-INSERT INTO Person VALUES ('userName4', 'John', 'T', 'john@hollywood.biz', 'eark');
+INSERT INTO Person VALUES ('userName4', 'John', 'Travolta', 'john@hollywood.biz', 'eark');
 INSERT INTO Person VALUES ('userName5', 'Chuck', 'Norris', 'chuck@hollywood.biz', 'eark');
 
 INSERT INTO EndUser VALUES ('userName1');
@@ -125,14 +126,8 @@ INSERT INTO EndUser VALUES ('userName3');
 INSERT INTO Archivist VALUES ('userName4');
 INSERT INTO Archivist VALUES ('userName5');
 */
-/*
-INSERT INTO Orders VALUES ('orderUUID1', 'Hydrogen', NULL, '2016-05-18 12:00:00', '2016-05-19 13:00:00', '2016-07-18 15:00:00', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO Orders VALUES ('orderUUID2', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO Orders VALUES ('orderUUID3', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO OrderedBy VALUES ('userName1', 'orderUUID1', 'This is a note...');
-INSERT INTO OrderedBy VALUES ('userName1', 'orderUUID2', 'This is a note...');
-INSERT INTO OrderedBy VALUES ('userName2', 'orderUUID3', 'This is a note...');
-*/
 
 /* source insert_data.sql; */
-source dump_adaptedToNewOrderItems.sql;
+/* source dump_adaptedToNewOrderItems.sql; */
+source oms_db_2016-10-10.sql;
+
