@@ -6,15 +6,26 @@ from db_model import *
 from sqlalchemy import exc
 import uuid
 from json_utils import is_dict_valid
+from request_validator import OrderIdValidator
 
 @app.route('/deleteOrder', methods = ['DELETE'])
 def delete_order():
     order_id = request.args.get('orderId')
-    order_items = BelongsTo.select(BelongsTo.c.orderId == order_id).execute().fetchall()
+    
+    # Check if the request parameter is valid
+    validator = OrderIdValidator(order_id)
+    if not validator.is_order_id_valid():
+        return validator.get_error_json()
+    
     try:
+        order = Orders.select(Orders.c.orderId == order_id).execute().first()
+        if not order:
+            return jsonify({'status':'error', 'message': 'No orders with orderId: ' + order_id})
+        order_items = BelongsTo.select(BelongsTo.c.orderId == order_id).execute().fetchall()
         Orders.delete().where(Orders.c.orderId == order_id).execute()
-        for item in order_items:
-            OrderItems.delete().where(OrderItems.c.refCode == item['refCode']).execute()
+        if order_items:
+            for item in order_items:
+                OrderItems.delete().where(OrderItems.c.refCode == item['refCode']).execute()
         return jsonify({'status': 'ok'})
     except exc.SQLAlchemyError as e:
         return jsonify({'status': 'error',
@@ -57,6 +68,12 @@ def get_orders():
 @app.route('/getOrderData', methods = ['GET'])
 def get_order_data():
     order_id = request.args.get('orderId')
+    
+    # Check if the request parameter is valid
+    validator = OrderIdValidator(order_id)
+    if not validator.is_order_id_valid():
+        return validator.get_error_json()
+    
     try:
         order_dict = get_order_data_helper(order_id)
         return jsonify(order_dict)
@@ -154,6 +171,8 @@ def update_order():
         return jsonify({'status': 'error',
                         'message': e.message})
         
+
+    
 
 # TODO: refactor - write a more general method that can take a dictionary (with empty values) of the 
 # correct form and check if the incoming JSON keys matches the keys in this dictionary
