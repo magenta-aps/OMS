@@ -19,8 +19,6 @@ $CURL_BIN \
     -X POST $LOGIN_URL
 
 
-exit
-
 echo -n " do something while logged in ..."
 
 # Query an order status
@@ -30,8 +28,9 @@ echo -n " do something while logged in ..."
 # Place a new order
 $CURL_BIN \
     -b $DJANGO_TOKEN \
-    -d	"{\"order_title\":\"example title_1\",\"aip_identifiers\":[\"b7738768-032d-3db1-eb42-b09611e6e6c6\",\"916c659c-909d-ad94-2289-c7ee8e7482d9\"]}" \
+    -d	"{\"order_title\":\"example title_1\",\"aip_identifiers\":[\"a445e1c6-747a-489f-9e00-169943e17df3\"]}" \
     -X POST http://localhost:8000/earkweb/search/submit_order/
 
 echo " logout"
 rm $COOKIES
+

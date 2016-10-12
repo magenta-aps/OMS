@@ -4,14 +4,15 @@ import requests
 from db_model import *
 from sqlalchemy import exc
 import time
+from request_validator import OrderIdValidator
 
-EARKWEB_LOGIN_URL = 'http://localhost:8001/earkweb/admin/login/'
-SUBMIT_ORDER_URL = 'http://localhost:8001/earkweb/search/submit_order/' 
+EARKWEB_LOGIN_URL = 'http://localhost:8000/earkweb/admin/login/'
+SUBMIT_ORDER_URL = 'http://localhost:8000/earkweb/search/submit_order/' 
 
 # TODO: do not hard code username and password 
 USERNAME = 'eark'
 PASSWORD = 'eark'
-cookie_to_check_for_expiration = 'sessionid'
+# cookie_to_check_for_expiration = 'sessionid'
 
 # Must take appropriate parameter
 # @app.route('/earkweb/orderStatus', methods = ['GET'])
@@ -34,17 +35,21 @@ def submit_order():
     """
 
     # Check the posted JSON
-        
     mandatory_keys = ['orderId']
-    
     if not request.json:
         abort(400)
     if not json_keys_valid(request.json, mandatory_keys):
         return jsonify({'success': False, 'message': 'Request JSON must contain the keys ' + ', '.join(mandatory_keys)})
-    if not is_json_value_non_blank_string(request.json['orderId']):
-        return jsonify({'success': False, 'message': 'orderId must be non-empty string'})
-    # TODO: should match value of orderId againts regex 
-    
+    order_id = request.json['orderId']
+    validator = OrderIdValidator(order_id)
+    if not validator.is_order_id_valid():
+        return validator.get_error_json()
+
+    # Return error if the order does not exists
+    order = Orders.select(Orders.c.orderId == order_id).execute().first()
+    if not order:
+        return jsonify({'status':'error', 'message': 'No orders with orderId: ' + order_id})
+
     # Login in to earkweb and get cookies
     # TODO: should be able to reuse a session
     try:
@@ -53,7 +58,6 @@ def submit_order():
         return jsonify({'success':False, 'message': e.message})
     
     # Get order details and construct payload
-    order_id = request.json['orderId']
     try:
         package_ids = get_packageIds(order_id)
         order_title = get_orderTitle(order_id)
@@ -74,7 +78,7 @@ def submit_order():
             return jsonify({'success':False, 'message':json['error']})
         else:
             # Put data into DB
-            return jsonify({'success': True})
+            return jsonify({'success': True, 'message':'The order was successfully submitted'})
         
         
 def get_packageIds(order_id):
