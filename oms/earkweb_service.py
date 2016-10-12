@@ -5,6 +5,7 @@ from db_model import *
 from sqlalchemy import exc
 import time
 from request_validator import OrderIdValidator
+import uuid
 
 EARKWEB_LOGIN_URL = 'http://localhost:8000/earkweb/admin/login/'
 SUBMIT_ORDER_URL = 'http://localhost:8000/earkweb/search/submit_order/' 
@@ -48,36 +49,40 @@ def submit_order():
     # Return error if the order does not exists
     order = Orders.select(Orders.c.orderId == order_id).execute().first()
     if not order:
-        return jsonify({'status':'error', 'message': 'No orders with orderId: ' + order_id})
+        return jsonify({'success': False, 'status':'error', 'message': 'No orders with orderId: ' + order_id})
 
     # Login in to earkweb and get cookies
     # TODO: should be able to reuse a session
     try:
         earkweb_session = get_session(EARKWEB_LOGIN_URL)
     except Exception as e:
-        return jsonify({'success':False, 'message': e.message})
+        return jsonify({'success': False, 'message': e.message})
     
     # Get order details and construct payload
     try:
         package_ids = get_packageIds(order_id)
         order_title = get_orderTitle(order_id)
     except exc.SQLAlchemyError as e:
-        return jsonify({'status': 'error', 'message': e.message})
+        return jsonify({'success': False,'status': 'error', 'message': e.message})
     payload = {'order_title': order_title, 'aip_identifiers': package_ids}
     print payload
     
     # Post the order    
     resp = earkweb_session.post(SUBMIT_ORDER_URL, json = payload, headers = {'Referer':EARKWEB_LOGIN_URL})
     if (resp.status_code != 200):
-        return jsonify({'success':False,
+        return jsonify({'success': False,
                         'message': 'There was a problem submitting the order to ' + SUBMIT_ORDER_URL + ' (status code: ' + resp.status_code + ')'})
     else:
         # Check the JSON response from earkweb
         json = resp.json() # dict
         if 'error' in json.keys():
-            return jsonify({'success':False, 'message':json['error']})
+            return jsonify({'success': False, 'message':json['error']})
         else:
             # Put data into DB
+            try:
+                Orders.update().where(Orders.c.orderId == order_id).values({'processId': json['process_id'], 'orderStatus': 'submitted'}).execute()
+            except exc.SQLAlchemyError as e:
+                return jsonify({'success': False, 'status': 'error', 'message': e.message})
             return jsonify({'success': True, 'message':'The order was successfully submitted'})
         
         
@@ -102,26 +107,9 @@ def get_packageIds(order_id):
 def get_orderTitle(order_id):
     """Get the order title (string) of the order with the given orderId"""
     title = sql_query_to_dict(Orders.select(Orders.c.orderId == order_id).execute().first())['title']
-    return title
+    return title+uuid.uuid4().hex # TODO: fix this
 
         
-    
-
-
-# def isCookieValid():
-#     cookies = earkweb_session.cookies.items()
-#     if len(cookies) == 0:
-#         return False
-#     for cookie in cookies:
-#         print cookie
-#         if cookie.name == cookie_to_check_for_expiration:
-#             expires = cookie.expires
-#             now = time.time()
-#             if now < expires:
-#                 return True
-#             else:
-#                 return False
-#     return False
 
 
 def json_keys_valid(json, keys):
