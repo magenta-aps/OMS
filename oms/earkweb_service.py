@@ -150,7 +150,8 @@ def get_packageIds(order_id):
 def get_orderTitle(order_id):
     """Get the order title (string) of the order with the given orderId"""
     title = sql_query_to_dict(Orders.select(Orders.c.orderId == order_id).execute().first())['title']
-    return title+uuid.uuid4().hex # TODO: fix this
+    # return title+uuid.uuid4().hex # TODO: fix this
+    return title
 
         
 
