@@ -62,7 +62,7 @@ If the request was successful the server responds with JSON like this:
 In case of an error, the `success` will be `false` and an appropriate `message` will 
 indicate what went wrong.  
 
-** GET /earkweb/orderStatus?orderId=\<orderId\>**
+**GET /earkweb/orderStatus?orderId=\<orderId\>**
 
 Gets the status of the order at earkweb. Will return JSON like this if the request was a success:
 ```
