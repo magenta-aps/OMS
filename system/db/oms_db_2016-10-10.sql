@@ -108,7 +108,7 @@ DROP TABLE IF EXISTS `OrderItems`;
 CREATE TABLE `OrderItems` (
   `refCode` varchar(32) NOT NULL,
   `title` varchar(255) DEFAULT NULL,
-  `aipURI` varchar(32) DEFAULT NULL,
+  `aipURI` varchar(255) DEFAULT NULL,
   `aipTitle` varchar(32) DEFAULT NULL,
   `levelOfDescription` text,
   `packageId` varchar(50) DEFAULT NULL,
