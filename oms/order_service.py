@@ -125,7 +125,7 @@ def new_order():
                 # "Old" values
                 item['refCode'] = uuid.uuid4().hex
                 item['aipTitle'] = None
-                item['aipURI'] = item['path'] # Should be changed
+                item['aipURI'] = None
                 item['levelOfDescription'] = 'package'
                 
                 OrderItems.insert(item).execute()

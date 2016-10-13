@@ -127,7 +127,5 @@ INSERT INTO Archivist VALUES ('userName4');
 INSERT INTO Archivist VALUES ('userName5');
 */
 
-/* source insert_data.sql; */
-/* source dump_adaptedToNewOrderItems.sql; */
-source oms_db_2016-10-10.sql;
+source oms_db_2016-10-13.sql;
 

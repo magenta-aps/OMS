@@ -59,6 +59,15 @@ def status():
         if not dip_storage:
             return jsonify({'success': True, 'processStatus': 'processing'})
         else:
+            # Put path to DIP into the DB
+            try:
+                order_items = BelongsTo.select(BelongsTo.c.orderId == order_id).execute().fetchall()
+                if order_items:
+                    for item in order_items:
+                        OrderItems.update().where(OrderItems.c.refCode == item['refCode']).values({'aipURI': dip_storage}).execute()
+            except exc.SQLAlchemyError as e:
+                return jsonify({'success': False, 'message': e.message})
+
             return jsonify({'success': True, 'processStatus': 'done', 'path': dip_storage})
     
 
@@ -103,7 +112,7 @@ def submit_order():
     # Get order details and construct payload
     try:
         package_ids = get_packageIds(order_id)
-        order_title = get_orderTitle(order_id)
+        order_title = get_orderTitle(order_id) + '_' + uuid.uuid4().hex
     except exc.SQLAlchemyError as e:
         return jsonify({'success': False, 'message': e.message})
     payload = {'order_title': order_title, 'aip_identifiers': package_ids}
