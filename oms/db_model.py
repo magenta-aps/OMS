@@ -43,9 +43,9 @@ def get_order_data_helper(order_id):
 
     for item in items:
         if item['confidential'] == 0:
-            item['confidential'] = False
+            item['confidential'] = "Unrestricted"
         elif item['confidential'] == 1:
-            item['confidential'] = True
+            item['confidential'] = "Restricted"
         else:
             print 'WARN: confidential not set'
 
