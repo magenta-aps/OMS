@@ -68,7 +68,7 @@ Gets the status of the order at earkweb. Will return JSON like this if the reque
 ```
 {
 	"success": true,
-	"processStatus": "Processing"
+	"processStatus": "processing"
 }
 ```
 In case of an error, the `success` will be `false` and an appropriate `message` will 
