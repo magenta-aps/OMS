@@ -155,7 +155,7 @@ def update_all_order_status():
     except Exception as e:
         return jsonify({'success': False, 'message': e.message})
         
-    return jsonify({'success': True, 'ordersUpdatedToDone': orders_updated_to_done})
+    return jsonify({'success': True, 'message': 'Status of the orders are updated in the DB', 'ordersUpdatedToDone': orders_updated_to_done})
 
 
         
