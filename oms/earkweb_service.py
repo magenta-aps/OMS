@@ -49,29 +49,18 @@ def status():
         earkweb_session = get_session(ORDER_STATUS_URL)
     except Exception as e:
         return jsonify({'success': False, 'message': e.message})
-    
-    # Everything ok - querying the order status
-    parameters = {'process_id': order_dict['processId']}
-    resp = earkweb_session.get(ORDER_STATUS_URL, params=parameters, headers = {'Referer':EARKWEB_LOGIN_URL})
-    if (resp.status_code != 200):
-        return jsonify({'success': False,
-                        'message': 'There was a querying the order status at ' + ORDER_STATUS_URL + ' (status code: ' + resp.status_code + ')'})
-    else:
-        json = resp.json()
-        dip_storage = json['dip_storage']
-        if not dip_storage:
-            return jsonify({'success': True, 'processStatus': 'processing'})
-        else:
-            # Put path to DIP into the DB
-            try:
-                order_items = BelongsTo.select(BelongsTo.c.orderId == order_id).execute().fetchall()
-                if order_items:
-                    for item in order_items:
-                        OrderItems.update().where(OrderItems.c.refCode == item['refCode']).values({'aipURI': dip_storage}).execute()
-            except exc.SQLAlchemyError as e:
-                return jsonify({'success': False, 'message': e.message})
 
-            return jsonify({'success': True, 'processStatus': 'done', 'path': dip_storage})
+    # Update the status for the order
+    try:
+        done = get_earkweb_order_status(order, earkweb_session)
+        if done:
+            process_status = 'done'
+        else:
+            process_status = 'processing'
+    except Exception as e:
+        return jsonify({'success': False, 'message': e.message})
+    
+    return jsonify({'success': True, 'processStatus': process_status})
     
 
 
@@ -147,8 +136,6 @@ def update_all_order_status():
     # Get all orders in the DB
     try:
         orders = sql_query_to_dict(Orders.select(Orders.c.orderStatus == 'submitted').execute().fetchall(), 'orders')['orders'] # list of dictionaries
-#         order_ids = [d['orderId'] for d in orders]
-        print orders
     except exc.SQLAlchemyError as e:
         return jsonify({'success': False, 'message': e.message})
 
@@ -245,28 +232,21 @@ def get_earkweb_order_status(order_dict, session):
     parameters = {'process_id': order_dict['processId']}
     resp = session.get(ORDER_STATUS_URL, params=parameters, headers = {'Referer':EARKWEB_LOGIN_URL})
     if (resp.status_code != 200):
-#         return jsonify({'success': False,
-#                         'message': 'There was a querying the order status at ' + ORDER_STATUS_URL + ' (status code: ' + resp.status_code + ')'})
         raise Exception('There was a querying the order status at ' + ORDER_STATUS_URL + ' (status code: ' + resp.status_code + ')')
     else:
         json = resp.json()
-        print json
         dip_storage = json['dip_storage']
         if not dip_storage:
             return False
-            # return jsonify({'success': True, 'processStatus': 'processing'})
         else:
-            # Put path to DIP into the DB
-            # TODO: only orderItems are updated - not the orderStatus
+            # Put path to DIP into the DB and update the orderStatus in the DB
             try:
+                Orders.update().where(Orders.c.orderId == order_dict['orderId']).values({'orderStatus': 'ready'}).execute()
                 order_items = BelongsTo.select(BelongsTo.c.orderId == order_dict['orderId']).execute().fetchall()
                 if order_items:
                     for item in order_items:
                         OrderItems.update().where(OrderItems.c.refCode == item['refCode']).values({'aipURI': dip_storage}).execute()
             except exc.SQLAlchemyError as e:
                 raise e
-                #return jsonify({'success': False, 'message': e.message})
-
-            # return jsonify({'success': True, 'processStatus': 'done', 'path': dip_storage})
             return True
 
