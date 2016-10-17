@@ -204,7 +204,7 @@ class JsonChecker(object):
     
         # Check if "order" contains the correct keys    
         order = json['order']
-        mandatory_keys = ['title', 'origin', 'endUserOrderNote', 'orderDate', 'plannedDate', 'user', 'items']
+        mandatory_keys = ['title', 'origin', 'endUserOrderNote', 'orderDate', 'plannedDate', 'user', 'items', 'deliveryFormat']
         if not is_dict_valid(order, mandatory_keys):
             self.json = jsonify({'success':False, 'message':'The \'order\' must have the keys: ' + ', '.join(mandatory_keys)})
             return False

@@ -5,6 +5,7 @@
 		"endUserOrderNote": "Please provide this order as fast as possible",
 		"orderDate": "2016-05-18 12:00:00",
 		"plannedDate": "2016-05-18 12:00:00",
+		"deliveryFormat":"pdf",
 		"user": {
 			"userName": "clint",
 			"firstname": "Clint",
