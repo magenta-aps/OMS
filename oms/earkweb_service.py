@@ -118,7 +118,9 @@ def submit_order():
     else:
         # Check the JSON response from earkweb
         json = resp.json() # dict
+        print json
         if 'error' in json.keys():
+            print 'hurra'
             return jsonify({'success': False, 'message':json['error']})
         else:
             # Put data into DB
