@@ -1,4 +1,5 @@
 import requests
+import sys
 
 URL = 'http://localhost:8000/earkweb/admin/login/'
 
@@ -19,12 +20,13 @@ res = client.post(URL, data = login_data, headers = {'Referer':URL}, allow_redir
 print 'Status code:',res.status_code
 print
 
-parameters = {'process_id':'1459cece-a304-4648-9cd5-2ea9bf9f4dbe'}
-res = client.get('http://localhost:8000/earkweb/search/order_status', params=parameters, headers = {'Referer':URL})
-print 'Status code:',res.status_code
+#parameters = {'process_id':'1459cece-a304-4648-9cd5-2ea9bf9f4dbe'}
+#res = client.get('http://localhost:8000/earkweb/search/order_status', params=parameters, headers = {'Referer':URL})
+#print 'Status code:',res.status_code
 
 ##### Place new order #####
-#payload = {'order_title':'AndreasPythonTestOrder', 'aip_identifiers':['urn:uuid:adb2b78e-c9c2-a35a-8cfa-f163612b3a08']}
-#res = client.post('http://localhost:8000/earkweb/search/submit_order/', json = payload, headers = {'Referer':URL})
-#print 'Status code:',res.status_code
-#print res.json()
+order_title = sys.argv[1]
+payload = {'order_title':order_title, 'aip_identifiers':['urn:uuid:adb2b78e-c9c2-a35a-8cfa-f163612b3a08']}
+res = client.post('http://localhost:8000/earkweb/search/submit_order/', json = payload, headers = {'Referer':URL})
+print 'Status code:',res.status_code
+print res.json()
