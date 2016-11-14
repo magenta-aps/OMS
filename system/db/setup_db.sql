@@ -112,20 +112,20 @@ CREATE TABLE BelongsTo(
 		ON UPDATE CASCADE	
 );
 
-/* For testing 
-INSERT INTO Person VALUES ('userName1', 'Clint', 'Eastwood', 'clint@hollywood.com', 'eark');
-INSERT INTO Person VALUES ('userName2', 'Bill', 'Clinton', 'bill@whitehouse.gov', 'eark');
-INSERT INTO Person VALUES ('userName3', 'Bruce', 'Lee', 'bruce@kungfu.org', 'eark');
-INSERT INTO Person VALUES ('userName4', 'John', 'Travolta', 'john@hollywood.biz', 'eark');
-INSERT INTO Person VALUES ('userName5', 'Chuck', 'Norris', 'chuck@hollywood.biz', 'eark');
+#  For testing
+INSERT INTO Person VALUES ('clint', 'Clint', 'Eastwood', 'clint@hollywood.com', 'eark');
+INSERT INTO Person VALUES ('bill', 'Bill', 'Clinton', 'bill@whitehouse.gov', 'eark');
+INSERT INTO Person VALUES ('bruce', 'Bruce', 'Lee', 'bruce@kungfu.org', 'eark');
+INSERT INTO Person VALUES ('john', 'John', 'Travolta', 'john@hollywood.biz', 'eark');
+INSERT INTO Person VALUES ('Chuck', 'Chuck', 'Norris', 'chuck@hollywood.biz', 'eark');
 
-INSERT INTO EndUser VALUES ('userName1');
-INSERT INTO EndUser VALUES ('userName2');
-INSERT INTO EndUser VALUES ('userName3');
+INSERT INTO EndUser VALUES ('clint');
+INSERT INTO EndUser VALUES ('bill');
+INSERT INTO EndUser VALUES ('bruce');
 
-INSERT INTO Archivist VALUES ('userName4');
-INSERT INTO Archivist VALUES ('userName5');
-*/
+INSERT INTO Archivist VALUES ('john');
+INSERT INTO Archivist VALUES ('Chuck');
 
-source oms_db_2016-10-13.sql;
+
+# source oms_db_2016-10-13.sql;
 
