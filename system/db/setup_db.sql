@@ -50,7 +50,8 @@ CREATE TABLE Orders(
 	orderStatus VARCHAR(10),
 	accessEndDate DATETIME,
 	deliveryFormat VARCHAR(30),
-	processId VARCHAR(50)
+	processId VARCHAR(50),
+	jobId VARCHAR(50)
 );
 
 DROP TABLE IF EXISTS OrderItems;
@@ -127,5 +128,5 @@ INSERT INTO Archivist VALUES ('userName4');
 INSERT INTO Archivist VALUES ('userName5');
 */
 
-source oms_db_2016-10-13.sql;
+source oms_db_2016-11-15.sql;
 

@@ -3,18 +3,86 @@ from flask import jsonify, request, abort
 import requests
 from db_model import *
 from sqlalchemy import exc
+from sqlalchemy.sql import or_
 import time
 from request_validator import OrderIdValidator
 import uuid
 
 EARKWEB_LOGIN_URL = 'http://localhost:8000/earkweb/admin/login/'
 SUBMIT_ORDER_URL = 'http://localhost:8000/earkweb/search/submit_order/' 
-ORDER_STATUS_URL = 'http://localhost:8000/earkweb/search/order_status'
+_ORDER_STATUS_URL = 'http://localhost:8000/earkweb/search/order_status' # Deprecated
+ORDER_STATUS_URL = 'http://localhost:8000/earkweb/search/jobstatus/'
+PREPARE_DIP = 'http://localhost:8000/earkweb/search/prepareDIPWorkingArea'
 
 # TODO: do not hard code username and password 
 USERNAME = 'eark'
 PASSWORD = 'eark'
 # cookie_to_check_for_expiration = 'sessionid'
+
+
+@app.route('/earkweb/prepareDIPWorkingArea', methods = ['POST'])
+def prepare_dip():
+    """
+        Must receive JSON like this:
+        {
+            "orderId": "c1b1c16e-2c00-474f-b99b-42019b3eaeed"
+        }
+    """
+
+    # TODO: refactor (code duplication)
+    # Check the posted JSON
+    mandatory_keys = ['orderId']
+    if not request.json:
+        abort(400)
+    if not json_keys_valid(request.json, mandatory_keys):
+        return jsonify({'success': False, 'message': 'Request JSON must contain the keys ' + ', '.join(mandatory_keys)}), 500
+    order_id = request.json['orderId']
+    validator = OrderIdValidator(order_id)
+    if not validator.is_order_id_valid():
+        return validator.get_error_json()
+
+    # Return error if the order does not exists or is not "submitted"
+    try:
+        order = Orders.select(Orders.c.orderId == order_id).execute().first()
+    except exc.SQLAlchemyError as e:
+        return jsonify({'success': False, 'message': e.message}), 500
+    if not order:
+        return jsonify({'success': False, 'message': 'No orders with orderId: ' + order_id}), 404
+    else:
+        # Check if the orderStatus is submitted
+        order_dict = sql_query_to_dict(order)
+        order_status = order_dict['orderStatus']
+        if not order_status == 'submitted':
+            return jsonify({'status': False, 'message': 'The order must have status submitted before preparing it for the working area'})
+    
+    # Login in to earkweb and get cookies
+    # TODO: should be able to reuse a session
+    try:
+        earkweb_session = get_session(EARKWEB_LOGIN_URL)
+    except Exception as e:
+        return jsonify({'success': False, 'message': e.message}), 500
+    
+    # Get order details and construct payload
+    try:
+        process_id = sql_query_to_dict(Orders.select(Orders.c.orderId == order_id).execute().first())['processId']
+    except exc.SQLAlchemyError as e:
+        return jsonify({'success': False, 'message': e.message}), 500
+    payload = {'process_id': process_id}
+    
+    resp = earkweb_session.post(PREPARE_DIP, json = payload, headers = {'Referer':EARKWEB_LOGIN_URL})
+    if resp.status_code == 201:
+        json = resp.json()
+        print json
+        # Put data into DB
+        try:
+            Orders.update().where(Orders.c.orderId == order_id).values({'jobId': json['jobid'], 'orderStatus': 'preparing'}).execute()
+        except exc.SQLAlchemyError as e:
+            return jsonify({'success': False, 'message': e.message}), 500
+        return jsonify(resp.json()), 201
+    else:
+        return jsonify(resp.json()), resp.status_code
+    
+    
 
 # Must take appropriate parameter
 @app.route('/earkweb/orderStatus', methods = ['GET'])
@@ -75,6 +143,7 @@ def submit_order():
     where orderId is the unique id of the order
     """
 
+    # TODO: refactor (code duplication)
     # Check the posted JSON
     mandatory_keys = ['orderId']
     if not request.json:
@@ -108,7 +177,6 @@ def submit_order():
     except exc.SQLAlchemyError as e:
         return jsonify({'success': False, 'message': e.message})
     payload = {'order_title': order_title, 'aip_identifiers': package_ids}
-    print payload
     
     # Post the order    
     resp = earkweb_session.post(SUBMIT_ORDER_URL, json = payload, headers = {'Referer':EARKWEB_LOGIN_URL})
@@ -133,9 +201,9 @@ def submit_order():
 @app.route('/earkweb/updateAllOrderStatus', methods = ['GET'])
 def update_all_order_status():
 
-    # Get all orders in the DB
+    # Get all orders in the DB that are not new, open or closed
     try:
-        orders = sql_query_to_dict(Orders.select(Orders.c.orderStatus == 'submitted').execute().fetchall(), 'orders')['orders'] # list of dictionaries
+        orders = sql_query_to_dict(Orders.select(and_(Orders.c.orderStatus != 'new', Orders.c.orderStatus != 'open', Orders.c.orderStatus != 'closed')).execute().fetchall(), 'orders')['orders'] # list of dictionaries
     except exc.SQLAlchemyError as e:
         return jsonify({'success': False, 'message': e.message})
 
@@ -220,8 +288,8 @@ def get_session(URL):
 
     return earkweb_session
 
-
-def get_earkweb_order_status(order_dict, session):
+# Deprecated
+def _get_earkweb_order_status(order_dict, session):
     """
         Parameters: order_dict of an order having orderStatus 'submitted'
         Return: True if the order is done and False otherwise
@@ -250,3 +318,9 @@ def get_earkweb_order_status(order_dict, session):
                 raise e
             return True
 
+
+def get_earkweb_order_status(order_dict, session):
+    """
+        Get the order status for a single order
+    """
+    
