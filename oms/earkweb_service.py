@@ -3,7 +3,7 @@ from flask import jsonify, request, abort
 import requests
 from db_model import *
 from sqlalchemy import exc
-from sqlalchemy.sql import or_
+from sqlalchemy.sql import and_, or_
 import time
 from request_validator import OrderIdValidator
 import uuid
@@ -208,17 +208,20 @@ def update_all_order_status():
         return jsonify({'success': False, 'message': e.message})
 
     # Log in to earkweb     
-    try:
-        earkweb_session = get_session(ORDER_STATUS_URL)
-    except Exception as e:
-        return jsonify({'success': False, 'message': e.message})
+#     try:
+#         earkweb_session = get_session(ORDER_STATUS_URL)
+#     except Exception as e:
+#         return jsonify({'success': False, 'message': e.message})
 
     # Update the status for each order
     try:
         orders_updated_to_done = []
         for order in orders:
-            done = get_earkweb_order_status(order, earkweb_session)
-            if done:
+            earkweb_session = get_session(ORDER_STATUS_URL + order['jobId'])
+            r = get_earkweb_order_status(order, earkweb_session)
+            if not r[1] == 200:
+                return r[0] 
+            else:
                 orders_updated_to_done.append(order['orderId'])
     except Exception as e:
         return jsonify({'success': False, 'message': e.message})
@@ -323,4 +326,13 @@ def get_earkweb_order_status(order_dict, session):
     """
         Get the order status for a single order
     """
-    
+    url = ORDER_STATUS_URL + order_dict['jobId']
+    resp = session.get(url, headers = {'Referer':EARKWEB_LOGIN_URL})
+    if resp.status_code == 200:
+        try:
+            Orders.update().where(Orders.c.orderId == order_dict['orderId']).values({'orderStatus': 'prepared'}).execute()
+        except exc.SQLAlchemyError as e:
+            raise e
+        return jsonify(resp.json()), 200
+    else:
+        return jsonify(resp.json()), resp.status_code
