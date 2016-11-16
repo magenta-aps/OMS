@@ -112,7 +112,6 @@ CREATE TABLE BelongsTo(
 		ON UPDATE CASCADE	
 );
 
-/* For testing 
 INSERT INTO Person VALUES ('userName1', 'Clint', 'Eastwood', 'clint@hollywood.com', 'eark');
 INSERT INTO Person VALUES ('userName2', 'Bill', 'Clinton', 'bill@whitehouse.gov', 'eark');
 INSERT INTO Person VALUES ('userName3', 'Bruce', 'Lee', 'bruce@kungfu.org', 'eark');
@@ -125,7 +124,6 @@ INSERT INTO EndUser VALUES ('userName3');
 
 INSERT INTO Archivist VALUES ('userName4');
 INSERT INTO Archivist VALUES ('userName5');
-*/
 
-source oms_db_2016-10-13.sql;
+/* source oms_db_2016-10-13.sql; */
 
