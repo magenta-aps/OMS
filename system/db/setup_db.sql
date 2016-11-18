@@ -36,22 +36,24 @@ CREATE TABLE Archivist(
 
 -- All the access stuff should maybe be move to another entity set
 DROP TABLE IF EXISTS Orders;
-CREATE TABLE Orders(
-	orderId VARCHAR(32) PRIMARY KEY,
-	title VARCHAR(255),
-	origin VARCHAR(12),
-	orderDate DATETIME,
-	validationDate DATETIME,
-	plannedDate DATETIME,
-	accessDate DATETIME,
-	accessDateComments TEXT,
-	-- accessRestrictionCode INT,
-	-- accessRestriction
-	orderStatus VARCHAR(10),
-	accessEndDate DATETIME,
-	deliveryFormat VARCHAR(30),
-	processId VARCHAR(50)
-);
+CREATE TABLE `Orders` (
+  `orderId` varchar(32) NOT NULL,
+  `title` varchar(255) DEFAULT NULL,
+  `origin` varchar(12) DEFAULT NULL,
+  `orderDate` datetime DEFAULT NULL,
+  `validationDate` datetime DEFAULT NULL,
+  `plannedDate` datetime DEFAULT NULL,
+  `accessDate` datetime DEFAULT NULL,
+  `accessDateComments` text,
+  `orderStatus` varchar(10) DEFAULT NULL,
+  `accessEndDate` datetime DEFAULT NULL,
+  `deliveryFormat` varchar(30) DEFAULT NULL,
+  `processId` varchar(50) DEFAULT NULL,
+  `jobId` varchar(50) DEFAULT NULL,
+  `dipId` varchar(50) DEFAULT NULL,
+  `dipURI` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`orderId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS OrderItems;
 CREATE TABLE OrderItems(
