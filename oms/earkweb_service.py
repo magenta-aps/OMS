@@ -19,7 +19,7 @@ USERNAME = 'eark'
 PASSWORD = 'eark'
 # cookie_to_check_for_expiration = 'sessionid'
 
-
+### Deprecated: functionality included in the /submitOrder resource
 @app.route('/earkweb/prepareDIPWorkingArea', methods = ['POST'])
 def prepare_dip():
     """
@@ -187,44 +187,69 @@ def submit_order():
         # Check the JSON response from earkweb
         json = resp.json() # dict
         if 'error' in json.keys():
+            # Set order status to error in the DB 
+            try:
+                Orders.update().where(Orders.c.orderId == order_id).values({'processId': json['process_id'], 'orderStatus': 'error'}).execute()
+            except exc.SQLAlchemyError as e:
+                return jsonify({'success': False, 'message': e.message})
             return jsonify({'success': False, 'message':json['error']})
         else:
-            # Put data into DB
+            # Update order status in the DB
             try:
                 Orders.update().where(Orders.c.orderId == order_id).values({'processId': json['process_id'], 'orderStatus': 'submitted'}).execute()
             except exc.SQLAlchemyError as e:
                 return jsonify({'success': False, 'message': e.message})
-            return jsonify({'success': True, 'message':'The order was successfully submitted'})
-        
+            
+            # Initiate the first three earkweb AIP to DIP conversion tasks
+            payload = {'process_id': json['process_id']}
+            resp2 = earkweb_session.post(PREPARE_DIP, json = payload, headers = {'Referer':EARKWEB_LOGIN_URL})
+            json2 = resp2.json()
+            if resp2.status_code == 201:
+                # Update jobId in the DB
+                try:
+                    Orders.update().where(Orders.c.orderId == order_id).values({'jobId': json2['jobid']}).execute()
+                except exc.SQLAlchemyError as e:
+                    return jsonify({'success': False, 'message': e.message})
+                
+                return jsonify({'success': True, 'message':'The order was successfully submitted'})
+            else:
+                # Set order status to error in the DB 
+                try:
+                    Orders.update().where(Orders.c.orderId == order_id).values({'processId': json['process_id'], 'orderStatus': 'error'}).execute()
+                except exc.SQLAlchemyError as e:
+                    return jsonify({'success': False, 'message': e.message})
+                return jsonify(resp.json()), resp.status_code
 
 
 @app.route('/earkweb/updateAllOrderStatus', methods = ['GET'])
 def update_all_order_status():
 
-    # Get all orders in the DB that are not new, open or closed
+    # Get all orders in the DB that are not new, open or ready
     try:
-        orders = sql_query_to_dict(Orders.select(and_(Orders.c.orderStatus != 'new', Orders.c.orderStatus != 'open', Orders.c.orderStatus != 'closed')).execute().fetchall(), 'orders')['orders'] # list of dictionaries
+        orders = sql_query_to_dict(Orders.select(and_(Orders.c.orderStatus != 'new', Orders.c.orderStatus != 'open', Orders.c.orderStatus != 'ready')).execute().fetchall(), 'orders')['orders'] # list of dictionaries
     except exc.SQLAlchemyError as e:
         return jsonify({'success': False, 'message': e.message})
 
     # Log in to earkweb     
-#     try:
-#         earkweb_session = get_session(ORDER_STATUS_URL)
-#     except Exception as e:
-#         return jsonify({'success': False, 'message': e.message})
-
-    # Update the status for each order
     try:
-        orders_updated_to_done = []
-        for order in orders:
-            earkweb_session = get_session(ORDER_STATUS_URL + order['jobId'])
-            r = get_earkweb_order_status(order, earkweb_session)
-            if not r[1] == 200:
-                return r[0] 
-            else:
-                orders_updated_to_done.append(order['orderId'])
+        earkweb_session = get_session(ORDER_STATUS_URL)
     except Exception as e:
         return jsonify({'success': False, 'message': e.message})
+
+    # Update the status for each order
+#     try:
+    orders_with_changed_status = []
+    orders_where_status_request_failed = []
+    for order in orders:
+        r = get_earkweb_order_status(order, earkweb_session)
+        print r
+            
+#             if not r[1] == 200:
+#                 return r[0] 
+#             else:
+#                 orders_updated_to_done.append(order['orderId'])
+#     except Exception as e:
+#         return jsonify({'success': False, 'message': e.message})
         
     return jsonify({'success': True, 'message': 'Status of the orders are updated in the DB', 'ordersUpdatedToDone': orders_updated_to_done})
 
@@ -328,11 +353,15 @@ def get_earkweb_order_status(order_dict, session):
     """
     url = ORDER_STATUS_URL + order_dict['jobId']
     resp = session.get(url, headers = {'Referer':EARKWEB_LOGIN_URL})
-    if resp.status_code == 200:
-        try:
-            Orders.update().where(Orders.c.orderId == order_dict['orderId']).values({'orderStatus': 'prepared'}).execute()
-        except exc.SQLAlchemyError as e:
-            raise e
-        return jsonify(resp.json()), 200
-    else:
-        return jsonify(resp.json()), resp.status_code
+    return resp.json(), resp.status_code
+#     if resp.status_code == 200:
+#         return resp.json(), 200
+#     else:
+#         raise Exception('Error querying the earkweb status of the order')
+#         try:
+#             Orders.update().where(Orders.c.orderId == order_dict['orderId']).values({'orderStatus': 'prepared'}).execute()
+#         except exc.SQLAlchemyError as e:
+#             raise e
+#         return jsonify(resp.json()), 200
+#     else:
+#         return jsonify(resp.json()), resp.status_code
