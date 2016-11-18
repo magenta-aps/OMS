@@ -189,7 +189,7 @@ def submit_order():
         if 'error' in json.keys():
             # Set order status to error in the DB 
             try:
-                Orders.update().where(Orders.c.orderId == order_id).values({'processId': json['process_id'], 'orderStatus': 'error'}).execute()
+                Orders.update().where(Orders.c.orderId == order_id).values({'orderStatus': 'error'}).execute()
             except exc.SQLAlchemyError as e:
                 return jsonify({'success': False, 'message': e.message})
             return jsonify({'success': False, 'message':json['error']})
@@ -215,7 +215,7 @@ def submit_order():
             else:
                 # Set order status to error in the DB 
                 try:
-                    Orders.update().where(Orders.c.orderId == order_id).values({'processId': json['process_id'], 'orderStatus': 'error'}).execute()
+                    Orders.update().where(Orders.c.orderId == order_id).values({'orderStatus': 'error'}).execute()
                 except exc.SQLAlchemyError as e:
                     return jsonify({'success': False, 'message': e.message})
                 return jsonify(resp.json()), resp.status_code
@@ -232,17 +232,25 @@ def update_all_order_status():
 
     # Log in to earkweb     
     try:
-        earkweb_session = get_session(ORDER_STATUS_URL)
+        earkweb_session = get_session(EARKWEB_LOGIN_URL)
     except Exception as e:
         return jsonify({'success': False, 'message': e.message})
 
     # Update the status for each order
-#     try:
     orders_with_changed_status = []
     orders_where_status_request_failed = []
     for order in orders:
+        order_id = order['orderId']
         r = get_earkweb_order_status(order, earkweb_session)
-        print r
+        status_code = r[1]
+        json = r[0]
+        if status_code == 200:
+            status = json['message']
+            if status == 'DIP preparation finished.':
+                pass
+            
+        else:
+            pass
             
 #             if not r[1] == 200:
 #                 return r[0] 
@@ -251,7 +259,7 @@ def update_all_order_status():
 #     except Exception as e:
 #         return jsonify({'success': False, 'message': e.message})
         
-    return jsonify({'success': True, 'message': 'Status of the orders are updated in the DB', 'ordersUpdatedToDone': orders_updated_to_done})
+    return jsonify({'success': True, 'message': 'Status of the orders are updated in the DB', 'ordersUpdatedToDone': orders_with_changed_status})
 
 
         
