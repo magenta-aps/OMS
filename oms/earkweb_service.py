@@ -61,9 +61,6 @@ def status():
         return jsonify({'success': False, 'message': e.message})
     
     return jsonify({'success': True, 'processStatus': process_status})
-    
-
-
 
 @app.route('/earkweb/submitOrder', methods = ['POST'])
 def submit_order():
@@ -93,6 +90,15 @@ def submit_order():
         return jsonify({'success': False, 'message': e.message})
     if not order:
         return jsonify({'success': False, 'message': 'No orders with orderId: ' + order_id})
+
+    # Also return an error if the order is already submitted (i.e. not new)
+    try:
+        order_status = get_orderStatus(order_id)
+    except exc.SQLAlchemyError as e:
+        return jsonify({'success': False, 'message': e.message})
+    if order_status != "new":
+        return jsonify({'success': False, 'message': 'The order has already been submitted and is in the '
+                                                     '['+order_status+'] phase.'})
 
     # Login in to earkweb and get cookies
     # TODO: should be able to reuse a session
@@ -127,8 +133,6 @@ def submit_order():
             except exc.SQLAlchemyError as e:
                 return jsonify({'success': False, 'message': e.message})
             return jsonify({'success': True, 'message':'The order was successfully submitted'})
-        
-
 
 @app.route('/earkweb/updateAllOrderStatus', methods = ['GET'])
 def update_all_order_status():
@@ -157,8 +161,7 @@ def update_all_order_status():
         
     return jsonify({'success': True, 'message': 'Status of the orders are updated in the DB', 'ordersUpdatedToDone': orders_updated_to_done})
 
-
-        
+# Below this line lie the private demons of this REST service; meddle at your own peril
 def get_packageIds(order_id):
     """
         Return a list (strings) of unique packageIds belonging to the order with 
@@ -175,16 +178,18 @@ def get_packageIds(order_id):
             package_ids.append(str(package_id))
     return package_ids
 
-        
-    
+# Get the status of the order. Initially internally to guard against submitting the order more than once
+def get_orderStatus(order_id):
+    """Get the order status (string) of the order with the given orderId"""
+    status = sql_query_to_dict(Orders.select(Orders.c.orderId == order_id).execute().first())['orderStatus']
+    # return title+uuid.uuid4().hex # TODO: fix this
+    return status
+
 def get_orderTitle(order_id):
     """Get the order title (string) of the order with the given orderId"""
     title = sql_query_to_dict(Orders.select(Orders.c.orderId == order_id).execute().first())['title']
     # return title+uuid.uuid4().hex # TODO: fix this
     return title
-
-        
-
 
 def json_keys_valid(json, keys):
     """Return True if json (dict) contains the mandatory keys (list)"""
@@ -192,7 +197,6 @@ def json_keys_valid(json, keys):
         if not key in json.keys():
             return False
     return True
-
 
 def is_json_value_non_blank_string(value):
     if not (isinstance(value, str) or isinstance(value, unicode)):

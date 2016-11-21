@@ -36,22 +36,24 @@ CREATE TABLE Archivist(
 
 -- All the access stuff should maybe be move to another entity set
 DROP TABLE IF EXISTS Orders;
-CREATE TABLE Orders(
-	orderId VARCHAR(32) PRIMARY KEY,
-	title VARCHAR(255),
-	origin VARCHAR(12),
-	orderDate DATETIME,
-	validationDate DATETIME,
-	plannedDate DATETIME,
-	accessDate DATETIME,
-	accessDateComments TEXT,
-	-- accessRestrictionCode INT,
-	-- accessRestriction
-	orderStatus VARCHAR(10),
-	accessEndDate DATETIME,
-	deliveryFormat VARCHAR(30),
-	processId VARCHAR(50)
-);
+CREATE TABLE `Orders` (
+  `orderId` varchar(32) NOT NULL,
+  `title` varchar(255) DEFAULT NULL,
+  `origin` varchar(12) DEFAULT NULL,
+  `orderDate` datetime DEFAULT NULL,
+  `validationDate` datetime DEFAULT NULL,
+  `plannedDate` datetime DEFAULT NULL,
+  `accessDate` datetime DEFAULT NULL,
+  `accessDateComments` text,
+  `orderStatus` varchar(10) DEFAULT NULL,
+  `accessEndDate` datetime DEFAULT NULL,
+  `deliveryFormat` varchar(30) DEFAULT NULL,
+  `processId` varchar(50) DEFAULT NULL,
+  `jobId` varchar(50) DEFAULT NULL,
+  `dipId` varchar(50) DEFAULT NULL,
+  `dipURI` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`orderId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS OrderItems;
 CREATE TABLE OrderItems(
@@ -112,18 +114,19 @@ CREATE TABLE BelongsTo(
 		ON UPDATE CASCADE	
 );
 
-INSERT INTO Person VALUES ('userName1', 'Clint', 'Eastwood', 'clint@hollywood.com', 'eark');
-INSERT INTO Person VALUES ('userName2', 'Bill', 'Clinton', 'bill@whitehouse.gov', 'eark');
-INSERT INTO Person VALUES ('userName3', 'Bruce', 'Lee', 'bruce@kungfu.org', 'eark');
-INSERT INTO Person VALUES ('userName4', 'John', 'Travolta', 'john@hollywood.biz', 'eark');
-INSERT INTO Person VALUES ('userName5', 'Chuck', 'Norris', 'chuck@hollywood.biz', 'eark');
+/* For testing */
+INSERT INTO Person VALUES ('clint', 'Clint', 'Eastwood', 'clint@hollywood.com', 'eark');
+INSERT INTO Person VALUES ('bill', 'Bill', 'Clinton', 'bill@whitehouse.gov', 'eark');
+INSERT INTO Person VALUES ('bruce', 'Bruce', 'Lee', 'bruce@kungfu.org', 'eark');
+INSERT INTO Person VALUES ('john', 'John', 'Travolta', 'john@hollywood.biz', 'eark');
+INSERT INTO Person VALUES ('chuck', 'Chuck', 'Norris', 'chuck@hollywood.biz', 'eark');
 
-INSERT INTO EndUser VALUES ('userName1');
-INSERT INTO EndUser VALUES ('userName2');
-INSERT INTO EndUser VALUES ('userName3');
+INSERT INTO EndUser VALUES ('clint');
+INSERT INTO EndUser VALUES ('bill');
+INSERT INTO EndUser VALUES ('bruce');
 
-INSERT INTO Archivist VALUES ('userName4');
-INSERT INTO Archivist VALUES ('userName5');
+INSERT INTO Archivist VALUES ('john');
+INSERT INTO Archivist VALUES ('chuck');
 
 /* source oms_db_2016-10-13.sql; */
 
