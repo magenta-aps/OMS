@@ -4,7 +4,6 @@ import requests
 from db_model import *
 from sqlalchemy import exc
 from sqlalchemy.sql import and_, or_
-import time
 from request_validator import OrderIdValidator
 import uuid
 
@@ -34,11 +33,11 @@ def create_dip():
     if not request.json:
         abort(400)
     if not json_keys_valid(request.json, mandatory_keys):
-        return jsonify({'success': False, 'message': 'Request JSON must contain the keys ' + ', '.join(mandatory_keys)}), 500
+        return jsonify({'success': False, 'message': 'Request JSON must contain the keys ' + ', '.join(mandatory_keys)}), 400
     order_id = request.json['orderId']
     validator = OrderIdValidator(order_id)
     if not validator.is_order_id_valid():
-        return validator.get_error_json()
+        return validator.get_error_json(), 400
 
     # Return error if the order does not exists or is not "processing"
     try:
@@ -49,7 +48,7 @@ def create_dip():
             # Check if the orderStatus is "processing"
             order_dict = sql_query_to_dict(order)
             if not order_dict['orderStatus'] == 'processing':
-                return jsonify({'success': False, 'message': 'The order must have status \'processing\' before DIP the creation can be initiated'})
+                return jsonify({'success': False, 'message': 'The order must have status \'processing\' before DIP the creation can be initiated'}), 412
         
         # Login in to earkweb and get cookies
         try:
@@ -90,11 +89,11 @@ def submit_order():
     if not request.json:
         abort(400)
     if not json_keys_valid(request.json, mandatory_keys):
-        return jsonify({'success': False, 'message': 'Request JSON must contain the keys ' + ', '.join(mandatory_keys)})
+        return jsonify({'success': False, 'message': 'Request JSON must contain the keys ' + ', '.join(mandatory_keys)}), 400
     order_id = request.json['orderId']
     validator = OrderIdValidator(order_id)
     if not validator.is_order_id_valid():
-        return validator.get_error_json()
+        return validator.get_error_json(), 400
 
     # Return error if the order does not exists
     try:
@@ -105,7 +104,7 @@ def submit_order():
             # Check that orderStatus is "new"
             order_status = sql_query_to_dict(order)['orderStatus']
             if order_status != 'new':
-                return jsonify({'success': False, 'message': 'Can only submit order with status \'new\''}) 
+                return jsonify({'success': False, 'message': 'Can only submit order with status \'new\''}), 412
     
         # Login in to earkweb and get cookies
         # TODO: should be able to reuse a session
@@ -123,14 +122,14 @@ def submit_order():
         resp = earkweb_session.post(SUBMIT_ORDER_URL, json = payload, headers = {'Referer':EARKWEB_LOGIN_URL})
         if (resp.status_code != 200):
             return jsonify({'success': False,
-                            'message': 'There was a problem submitting the order to ' + SUBMIT_ORDER_URL + ' (status code: ' + resp.status_code + ')'})
+                            'message': 'There was a problem submitting the order to ' + SUBMIT_ORDER_URL}), resp.status_code
         else:
             # Check the JSON response from earkweb
             json = resp.json() # dict
             if 'error' in json.keys():
                 # Set order status to error in the DB 
                 Orders.update().where(Orders.c.orderId == order_id).values({'orderStatus': 'error'}).execute()
-                return jsonify({'success': False, 'message':json['error']})
+                return jsonify({'success': False, 'message':json['error']}), 500
             else:
                 # Update order status in the DB
                 Orders.update().where(Orders.c.orderId == order_id).values({'processId': json['process_id']}).execute()
