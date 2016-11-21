@@ -228,38 +228,51 @@ def update_all_order_status():
     try:
         orders = sql_query_to_dict(Orders.select(and_(Orders.c.orderStatus != 'new', Orders.c.orderStatus != 'open', Orders.c.orderStatus != 'ready')).execute().fetchall(), 'orders')['orders'] # list of dictionaries
     except exc.SQLAlchemyError as e:
-        return jsonify({'success': False, 'message': e.message})
+        return jsonify({'success': False, 'message': e.message}), 500
 
     # Log in to earkweb     
     try:
         earkweb_session = get_session(EARKWEB_LOGIN_URL)
     except Exception as e:
-        return jsonify({'success': False, 'message': e.message})
+        return jsonify({'success': False, 'message': e.message}), 500
 
     # Update the status for each order
     orders_with_changed_status = []
     orders_where_status_request_failed = []
     for order in orders:
         order_id = order['orderId']
+        print order_id
         r = get_earkweb_order_status(order, earkweb_session)
         status_code = r[1]
         json = r[0]
-        if status_code == 200:
-            status = json['message']
-            if status == 'DIP preparation finished.':
-                pass
-            
-        else:
-            pass
-            
-#             if not r[1] == 200:
-#                 return r[0] 
-#             else:
-#                 orders_updated_to_done.append(order['orderId'])
-#     except Exception as e:
-#         return jsonify({'success': False, 'message': e.message})
+        try:
+            if status_code == 200:
+                status = json['message']
+                old_order_status = sql_query_to_dict(Orders.select(Orders.c.orderId == order_id).execute().first())['orderStatus']
+                if status == 'DIP preparation finished.':
+                    new_order_status = 'processing'
+                elif status == 'dummy':
+                    pass
+                if old_order_status != new_order_status:
+                    Orders.update().where(Orders.c.orderId == order_id).values({'orderStatus': new_order_status}).execute()
+                    orders_with_changed_status.append(order_id)
+            else:
+                Orders.update().where(Orders.c.orderId == order_id).values({'orderStatus': 'error'}).execute()
+                orders_where_status_request_failed.append([order_id, json])
+        except exc.SQLAlchemyError as e:
+            return jsonify({'success': False, 'message': e.message}), 500
         
-    return jsonify({'success': True, 'message': 'Status of the orders are updated in the DB', 'ordersUpdatedToDone': orders_with_changed_status})
+        if len(orders_where_status_request_failed) == 0:
+            # All order statusses updated correctly
+            return jsonify({'success': True, 'message': 'Status of the orders are updated in the DB',
+                            'ordersUpdated': orders_with_changed_status,
+                            'ordersWhereStatusRequestFailed': orders_where_status_request_failed})
+        else:
+            # At least one order status could not be updated correctly
+            return jsonify({'success': False, 'message': 'Not all orders could be updated',
+                            'ordersUpdated': orders_with_changed_status,
+                            'ordersWhereStatusRequestFailed': orders_where_status_request_failed})
+            
 
 
         
