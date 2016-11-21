@@ -62,7 +62,7 @@ def create_dip():
     
     # Get order details and construct payload
     try:
-        process_id = sql_query_to_dict(Orders.select(Orders.c.orderId == order_id).execute().first())['processId']
+        process_id = get_order_value(order_id, 'processId')
     except exc.SQLAlchemyError as e:
         return jsonify({'success': False, 'message': e.message}), 500
     payload = {'process_id': process_id}
@@ -127,7 +127,7 @@ def submit_order():
     # Get order details and construct payload
     try:
         package_ids = get_packageIds(order_id)
-        order_title = get_orderTitle(order_id) + '_' + uuid.uuid4().hex
+        order_title = get_order_value(order_id, 'title') + '_' + uuid.uuid4().hex
     except exc.SQLAlchemyError as e:
         return jsonify({'success': False, 'message': e.message})
     payload = {'order_title': order_title, 'aip_identifiers': package_ids}
@@ -202,7 +202,7 @@ def update_all_order_status():
         try:
             if status_code == 200:
                 status = json['message']
-                old_order_status = sql_query_to_dict(Orders.select(Orders.c.orderId == order_id).execute().first())['orderStatus']
+                old_order_status = get_order_value(order_id, 'orderStatus')
                 if status == 'DIP preparation finished.':
                     new_order_status = 'processing'
                 elif status == 'DIP creation finished successfully.':
@@ -248,11 +248,10 @@ def get_packageIds(order_id):
 
         
     
-def get_orderTitle(order_id):
+def get_order_value(order_id, key):
     """Get the order title (string) of the order with the given orderId"""
-    title = sql_query_to_dict(Orders.select(Orders.c.orderId == order_id).execute().first())['title']
-    # return title+uuid.uuid4().hex # TODO: fix this
-    return title
+    value = sql_query_to_dict(Orders.select(Orders.c.orderId == order_id).execute().first())[key]
+    return value
 
         
 
