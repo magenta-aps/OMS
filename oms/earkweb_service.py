@@ -111,7 +111,7 @@ def submit_order():
         try:
             earkweb_session = get_session(EARKWEB_LOGIN_URL)
         except Exception as e:
-            return jsonify({'success': False, 'message': e.message})
+            return jsonify({'success': False, 'message': e.message}), 500
         
         # Get order details and construct payload
         package_ids = get_packageIds(order_id)

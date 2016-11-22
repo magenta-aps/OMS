@@ -51,7 +51,9 @@ CREATE TABLE Orders(
 	accessEndDate DATETIME,
 	deliveryFormat VARCHAR(30),
 	processId VARCHAR(50),
-	jobId VARCHAR(50)
+	jobId VARCHAR(50),
+	dipURI VARCHAR(255),
+	dipId VARCHAR(50)
 );
 
 DROP TABLE IF EXISTS OrderItems;
