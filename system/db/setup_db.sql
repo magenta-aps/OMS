@@ -53,7 +53,8 @@ CREATE TABLE Orders(
 	processId VARCHAR(50),
 	jobId VARCHAR(50),
 	dipURI VARCHAR(255),
-	dipId VARCHAR(50)
+	dipId VARCHAR(50),
+	dipPath VARCHAR(255)
 );
 
 DROP TABLE IF EXISTS OrderItems;

@@ -5,6 +5,7 @@ from db_model import *
 from sqlalchemy import exc
 from sqlalchemy.sql import and_, or_
 from request_validator import OrderIdValidator
+from earkweb_pairtree import PairtreeStorage
 import uuid
 
 EARKWEB_LOGIN_URL = 'http://localhost:8000/earkweb/admin/login/'
@@ -16,6 +17,10 @@ CREATE_DIP = 'http://localhost:8000/earkweb/search/createDIP'
 # TODO: do not hard code username and password 
 USERNAME = 'eark'
 PASSWORD = 'eark'
+
+EARKWEB_STORAGE_DIR = '/var/data/earkweb/storage'
+
+pairtree_storage = PairtreeStorage(EARKWEB_STORAGE_DIR)
 
 
 @app.route('/earkweb/createDIP', methods = ['POST'])
@@ -174,6 +179,7 @@ def update_all_order_status():
             r = get_earkweb_order_status(order, earkweb_session)
             status_code = r[1]
             json = r[0]
+            print json
             if status_code == 200:
                 status = json['message']
                 old_order_status = get_order_value(order_id, 'orderStatus')
@@ -184,9 +190,14 @@ def update_all_order_status():
                 if old_order_status != new_order_status:
                     Orders.update().where(Orders.c.orderId == order_id).values({'orderStatus': new_order_status}).execute()
                     orders_with_changed_status.append(order_id)
+                    if new_order_status == 'ready':
+                        dipId, dipPath = get_dipId_and_dipPath(json['download_url'])
+                        Orders.update().where(Orders.c.orderId == order_id).values({'dipId': dipId, 
+                                                                                    'dipPath': dipPath, 
+                                                                                    'dipURI': json['download_url']}).execute()
             else:
                 Orders.update().where(Orders.c.orderId == order_id).values({'orderStatus': 'error'}).execute()
-                orders_where_status_request_failed.append([order_id, json])
+                orders_where_status_request_failed.append({'orderId': order_id, 'status code: ':status_code ,'error': json})
             
         if len(orders_where_status_request_failed) == 0:
             # All order statuses updated correctly
@@ -263,3 +274,15 @@ def get_earkweb_order_status(order_dict, session):
     url = ORDER_STATUS_URL + order_dict['jobId']
     resp = session.get(url, headers = {'Referer':EARKWEB_LOGIN_URL})
     return resp.json(), resp.status_code
+
+
+def get_dipId_and_dipPath(url):
+    """
+        Parameter: the download URL for the DIP
+    """
+    
+    # Extract the dipId from the URL
+    dipId = url.split('/')[-1].split('.')[0]
+    path = pairtree_storage.get_object_path(dipId)
+    return (dipId, path)
+
