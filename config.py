@@ -1,1 +1,2 @@
 SQLALCHEMY_DATABASE_URI = 'mysql://eark:eark@localhost/oms'
+SQLALCHEMY_TRACK_MODIFICATIONS = True
