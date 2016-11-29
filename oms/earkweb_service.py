@@ -7,6 +7,7 @@ from sqlalchemy.sql import and_, or_
 from request_validator import OrderIdValidator
 from earkweb_pairtree import PairtreeStorage
 import uuid
+import tarfile
 
 EARKWEB_LOGIN_URL = 'http://localhost:8000/earkweb/admin/login/'
 SUBMIT_ORDER_URL = 'http://localhost:8000/earkweb/search/submit_order/' 
@@ -19,6 +20,7 @@ USERNAME = 'eark'
 PASSWORD = 'eark'
 
 EARKWEB_STORAGE_DIR = '/var/data/earkweb/storage'
+IPVIEWER_UNTAR_DIR = '/var/data/ipviewer/untar'
 
 pairtree_storage = PairtreeStorage(EARKWEB_STORAGE_DIR)
 
@@ -173,9 +175,9 @@ def update_all_order_status():
         # Update the status for each order
         orders_with_changed_status = []
         orders_where_status_request_failed = []
+        orders_where_untarring_failed = []
         for order in orders:
             order_id = order['orderId']
-            print order_id
             r = get_earkweb_order_status(order, earkweb_session)
             status_code = r[1]
             json = r[0]
@@ -195,6 +197,15 @@ def update_all_order_status():
                         Orders.update().where(Orders.c.orderId == order_id).values({'dipId': dipId, 
                                                                                     'dipPath': dipPath, 
                                                                                     'dipURI': json['download_url']}).execute()
+                        # untar the DIP
+                        try:
+                            tar = tarfile.open(dipPath)
+                            tar.extractall(IPVIEWER_UNTAR_DIR)
+                            tar.close()
+                        except tarfile.TarError as e:
+                            Orders.update().where(Orders.c.orderId == order_id).values({'orderStatus': 'error'}).execute()
+                            orders_where_untarring_failed.append({'orderId': order_id, 'message: ': e.message})
+                        
             else:
                 Orders.update().where(Orders.c.orderId == order_id).values({'orderStatus': 'error'}).execute()
                 orders_where_status_request_failed.append({'orderId': order_id, 'status code: ':status_code ,'error': json})
@@ -203,7 +214,8 @@ def update_all_order_status():
             # All order statuses updated correctly
             return jsonify({'success': True, 'message': 'Status of the orders are updated in the DB',
                             'ordersUpdated': orders_with_changed_status,
-                            'ordersWhereStatusRequestFailed': orders_where_status_request_failed})
+                            'ordersWhereStatusRequestFailed': orders_where_status_request_failed,
+                            'ordersWhereUntarringFailed': orders_where_untarring_failed})
         else:
             # At least one order status could not be updated correctly
             return jsonify({'success': False, 'message': 'Not all orders could be updated',
