@@ -14,6 +14,7 @@ SUBMIT_ORDER_URL = 'http://localhost:8000/earkweb/search/submit_order/'
 ORDER_STATUS_URL = 'http://localhost:8000/earkweb/search/jobstatus/'
 PREPARE_DIP = 'http://localhost:8000/earkweb/search/prepareDIPWorkingArea'
 CREATE_DIP = 'http://localhost:8000/earkweb/search/createDIP'
+INDEX_DIP_URL = 'http://localhost:8000/earkweb/earkcore/index_local_storage_ip'
 
 # TODO: do not hard code username and password 
 USERNAME = 'eark'
@@ -174,53 +175,80 @@ def update_all_order_status():
     
         # Update the status for each order
         orders_with_changed_status = []
-        orders_where_status_request_failed = []
-        orders_where_untarring_failed = []
+        orders_with_errors = []
         for order in orders:
             order_id = order['orderId']
             r = get_earkweb_order_status(order, earkweb_session)
             status_code = r[1]
             json = r[0]
-            print json
             if status_code == 200:
                 status = json['message']
                 old_order_status = get_order_value(order_id, 'orderStatus')
                 if status == 'DIP preparation finished.':
                     new_order_status = 'processing'
                 elif status == 'DIP creation finished successfully.':
-                    new_order_status = 'ready'
+                    new_order_status = 'packaged'
+                elif status == 'IP indexing finished successfully.':
+                    new_order_status = 'untarring'
+                    
                 if old_order_status != new_order_status:
                     Orders.update().where(Orders.c.orderId == order_id).values({'orderStatus': new_order_status}).execute()
                     orders_with_changed_status.append(order_id)
-                    if new_order_status == 'ready':
+
+                    if new_order_status == 'packaged':
+
                         dipId, dipPath = get_dipId_and_dipPath(json['download_url'])
                         Orders.update().where(Orders.c.orderId == order_id).values({'dipId': dipId, 
                                                                                     'dipPath': dipPath, 
                                                                                     'dipURI': json['download_url']}).execute()
+                        
+                        # Make call to indexing code
+                        r_idx = index_order(dipId, earkweb_session)
+                        status_idx = r_idx[1]
+                        json_idx = r_idx[0]
+
+                        if status_idx == 201:
+                            Orders.update().where(Orders.c.orderId == order_id).values({'orderStatus': 'indexing',
+                                                                                        'jobId': json_idx['jobid']}).execute()
+                        else:
+                            Orders.update().where(Orders.c.orderId == order_id).values({'orderStatus':'error'}).execute()
+                            orders_with_errors.append({'orderId': order_id, 'status code:':status_idx, 'error': json_idx})
+                        
+                    
+                    if new_order_status == 'untarring':
+                        dipPath = get_order_value(order_id, 'dipPath')
+                        
                         # untar the DIP
                         try:
                             tar = tarfile.open(dipPath)
                             tar.extractall(IPVIEWER_UNTAR_DIR)
                             tar.close()
+                            Orders.update().where(Orders.c.orderId == order_id).values({'orderStatus':'ready'}).execute()
                         except tarfile.TarError as e:
                             Orders.update().where(Orders.c.orderId == order_id).values({'orderStatus': 'error'}).execute()
-                            orders_where_untarring_failed.append({'orderId': order_id, 'message: ': e.message})
+                            orders_with_errors.append({'orderId': order_id, 'error: ': e.message})
+                        
+                        
+                    if new_order_status == 'ready':
+                        pass
                         
             else:
                 Orders.update().where(Orders.c.orderId == order_id).values({'orderStatus': 'error'}).execute()
-                orders_where_status_request_failed.append({'orderId': order_id, 'status code: ':status_code ,'error': json})
-            
-        if len(orders_where_status_request_failed) == 0:
+                orders_with_errors.append({'orderId': order_id, 'status code: ':status_code ,'error': json})
+        
+        return_json = {'ordersUpdated': orders_with_changed_status, 'ordersWithErrors': orders_with_errors}
+        if len(orders_with_errors) == 0:
             # All order statuses updated correctly
-            return jsonify({'success': True, 'message': 'Status of the orders are updated in the DB',
-                            'ordersUpdated': orders_with_changed_status,
-                            'ordersWhereStatusRequestFailed': orders_where_status_request_failed,
-                            'ordersWhereUntarringFailed': orders_where_untarring_failed})
+            return_json['success'] = True
+            return_json['message'] = 'Status of the orders are updated in the DB'
         else:
             # At least one order status could not be updated correctly
-            return jsonify({'success': False, 'message': 'Not all orders could be updated',
-                            'ordersUpdated': orders_with_changed_status,
-                            'ordersWhereEarkwebStatusRequestFailed': orders_where_status_request_failed})
+            return_json['success'] = False
+            return_json['message'] = 'Not all orders could be updated'
+        
+        return jsonify(return_json)
+    
+    
             
     except exc.SQLAlchemyError as e:
         return jsonify({'success': False, 'message': e.message}), 500
@@ -285,6 +313,17 @@ def get_earkweb_order_status(order_dict, session):
     """
     url = ORDER_STATUS_URL + order_dict['jobId']
     resp = session.get(url, headers = {'Referer':EARKWEB_LOGIN_URL})
+    return resp.json(), resp.status_code
+
+
+def index_order(dipId, session):
+    """
+    Start indexing a DIP
+    """
+    payload = {'identifier': dipId}
+    print payload
+    resp = session.post(INDEX_DIP_URL, json = payload, headers = {'Referer':EARKWEB_LOGIN_URL})
+    print resp.json()
     return resp.json(), resp.status_code
 
 
