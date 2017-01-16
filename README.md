@@ -1,5 +1,7 @@
-# OMS
-Backend (RESTful service) for the EARK Order Management Tool
+# Order Management Servive (OMS)
+The Order Management Service is the backend for the Order Management Tool (OMT) in the [EARK project](http://eark-project.com/). It is a RESTful service written in Python/Flask. As an enduser of the 
+[E-Ark-Platform UI](https://github.com/magenta-aps/E-Ark-Platform-UI) it is not necessary to worry about 
+the OMS, but below the API used by the frontend developers is described (all the services respond with JSON).
 
 ## Items Service
 
@@ -11,12 +13,16 @@ Gets all the items belonging to the given orderId.
 
 **DELETE /deleteOrder?orderId=\<orderId\>**
 
+Delete the order with the given orderId.
+
 **GET /getOrders?userName=\<userName\>&status=\<status\>&notStatus=\<status\>&assignee=\<assignee\>**
 
 Can be called without parameters in which case all orders are returned. Provide exactly one of the 
 specified parameter for filtering search results (further filtering should be done from the Anguler front-end). 
 
 **GET /getOrderData?orderId=\<orderId\>**
+
+Gets the order data for the order with the given orderId.
 
 **POST /newOrder**
 
@@ -31,11 +37,15 @@ Include whatever properties you wish to change.
 
 **DELETE /deletePerson?userName=\<userName\>**
 
+Delete the user (enduser or archivist) with the given username.
+
 **GET /getArchivists**
 
 Gets all the archivists.
 
 **GET /getPerson?userName=\<userName\>**
+
+Get the details for the person (both users and archivists) with the given username.
 
 **POST /newPerson**
 
@@ -43,6 +53,13 @@ Consumes JSON like [this](https://github.com/magenta-aps/OMS/blob/develop/exampl
 If the person is an archivist the type must be set to "archivist" 
 
 ## Earkweb Service
+
+The services described in this section takes care of the communication to [earkweb](https://github.com/eark-project/earkweb). These services are used to submit orders, query the status of these etc. A few words on the 
+status of an order as it goes through the search/OMT/IPviewer workflow are needed. More to follow...
+
+**POST /earkweb/createDIP**
+
+Used to create the DIP. This can be called when the order is in the "processing" state.
 
 **POST /earkweb/submitOrder**
 
