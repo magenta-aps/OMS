@@ -1,4 +1,4 @@
-# Order Management Servive (OMS)
+# Order Management Service (OMS)
 The Order Management Service is the backend for the Order Management Tool (OMT) in the [EARK project](http://eark-project.com/). It is a RESTful service written in Python/Flask. As an enduser of the 
 [E-Ark-Platform UI](https://github.com/magenta-aps/E-Ark-Platform-UI) it is not necessary to worry about 
 the OMS, but below the API used by the frontend developers is described (all the services respond with JSON).
