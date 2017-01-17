@@ -55,15 +55,30 @@ If the person is an archivist the type must be set to "archivist"
 ## Earkweb Service
 
 The services described in this section takes care of the communication to [earkweb](https://github.com/eark-project/earkweb). These services are used to submit orders, query the status of these etc. A few words on the 
-status of an order as it goes through the search/OMT/IPviewer workflow are needed. More to follow...
+status of an order as it goes through the search/OMT/IPviewer workflow are needed. Basically, the earkweb service of the OMS makes it possible to run the AIP to DIP conversion tasks from the OMT. It works as follows:
+
+1. When a user has placed an order from "search", it will be visible in to the archivist in the OMT with order status "new".
+
+2. When the archivist clicks on the order in the OMT (the "update order status" icon in the top right corner may need to be clicked first) he or she can click the "Process order" button. The order status will then change to "submitted" and the earkweb tasks AIPtoDIPReset, DIPAcquireAIPs and DIPExtractAIPs are initiated.
+
+3. Content now have to be moved to the DIP.
+
+4. When the "update order status" icon is clicked, the order status will change to "processing" (meaning that the archivist can now manipulate the files in the working area). It is now possible to view the package in the IPviewer.
+
+5. When the archivist is satisfied with the DIP, the "Package DIP" button can be clicked. The earkweb tasks DIPMetadataCreation, DIPIdentifierAssignment, DIPPackaging and DIPStore tasks are run. The order status will now change to "packaging".
+
+6. When the DIP is finished (click the "update order status" icon again) its status will change to "ready" and a "Browse"-button will appear on the order details page. When this is clicked, the order can be browsed in the IPviewer.
+
+Internally, the OMS works with the following order statuses: (error) - new - submitted - processing - packaging - packaged - untarring - indexing - ready.
 
 **POST /earkweb/createDIP**
 
-Used to create the DIP. This can be called when the order is in the "processing" state.
+Used to create the DIP. This can be called when the order is in the "processing" state. Should be used when the archivist is done manipulating the "DIP0" in the working area.
 
 **POST /earkweb/submitOrder**
 
-Used for submitting orders to earkweb. Consumes JSON containing the orderId, i.e. like this:
+Used for submitting orders to earkweb by the archivist. Can only be called when to order has status "new". 
+Consumes JSON containing the orderId, i.e. like this:
 ```
 {
 	"orderId": "2a48e52cf7914fc886e8a632abf0826c"
@@ -79,14 +94,6 @@ If the request was successful the server responds with JSON like this:
 In case of an error, the `success` will be `false` and an appropriate `message` will 
 indicate what went wrong.  
 
-**GET /earkweb/orderStatus?orderId=\<orderId\>**
+**GET /earkweb/updateAllOrderStatus**
 
-Gets the status of the order at earkweb. Will return JSON like this if the request was a success:
-```
-{
-	"success": true,
-	"processStatus": "processing"
-}
-```
-In case of an error, the `success` will be `false` and an appropriate `message` will 
-indicate what went wrong.  
+Used to update the order statuses for all the orders in the OMT. As the orders are processed within earkweb the statuses of these change and the statuses within the OMT should be updated correspondingly. JSON containing info about any change in order statuses will be returned.
