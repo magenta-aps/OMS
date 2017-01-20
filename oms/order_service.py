@@ -127,7 +127,8 @@ def new_order():
                 item['aipTitle'] = None
                 item['aipURI'] = None
                 item['levelOfDescription'] = 'package'
-                item['packageId'] = 'urn:uuid:' + item['packageId']
+                # item['packageId'] = 'urn:uuid:' + item['packageId']
+                item['packageId'] = item['packageId']
                 
                 OrderItems.insert(item).execute()
                 BelongsTo.insert({'orderId': order['orderId'], 'refCode': item['refCode']}).execute()
