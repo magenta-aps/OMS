@@ -73,7 +73,7 @@ def create_dip():
             # Put data into DB
             json = resp.json()
             Orders.update().where(Orders.c.orderId == order_id).values({'jobId': json['jobid'], 'orderStatus': 'packaging'}).execute()
-	    print 'Order status: packaging'
+            print 'Order status: packaging'
             return jsonify(resp.json()), 201
         else:
             return jsonify(resp.json()), resp.status_code
@@ -126,7 +126,7 @@ def submit_order():
         package_ids = get_packageIds(order_id)
         order_title = get_order_value(order_id, 'title') + '_' + uuid.uuid4().hex
         payload = {'order_title': order_title, 'aip_identifiers': package_ids}
-	print payload
+        print payload
         
         # Post the order    
         resp = earkweb_session.post(SUBMIT_ORDER_URL, json = payload, headers = {'Referer':EARKWEB_LOGIN_URL})
@@ -151,12 +151,12 @@ def submit_order():
                 if resp2.status_code == 201:
                     # Update jobId in the DB
                     Orders.update().where(Orders.c.orderId == order_id).values({'jobId': json2['jobid'], 'orderStatus':'submitted'}).execute()
-		    print 'Order status: submitted'
+                    print 'Order status: submitted'
                     return jsonify({'success': True, 'message':'The order was successfully submitted'})
                 else:
                     # Set order status to error in the DB 
                     Orders.update().where(Orders.c.orderId == order_id).values({'orderStatus': 'error'}).execute()
-		    print 'Order status: error submitting'
+                    print 'Order status: error submitting'
                     return jsonify(resp.json()), resp.status_code
 
     except exc.SQLAlchemyError as e:
@@ -197,7 +197,7 @@ def update_all_order_status():
                     
                 if old_order_status != new_order_status:
                     Orders.update().where(Orders.c.orderId == order_id).values({'orderStatus': new_order_status}).execute()
-		    print 'Order status: ', new_order_status
+                    print 'Order status: ', new_order_status
                     orders_with_changed_status.append(order_id)
 
                     if new_order_status == 'packaged':
@@ -215,11 +215,11 @@ def update_all_order_status():
                         if status_idx == 201:
                             Orders.update().where(Orders.c.orderId == order_id).values({'orderStatus': 'indexing',
                                                                                         'jobId': json_idx['jobid']}).execute()
-		    	    print 'Order status: indexing'
+                            print 'Order status: indexing'
                         else:
                             Orders.update().where(Orders.c.orderId == order_id).values({'orderStatus':'error'}).execute()
                             orders_with_errors.append({'orderId': order_id, 'status code:':status_idx, 'error': json_idx})
-		    	    print 'Order status: error indexing'
+                            print 'Order status: error indexing'
                         
                     
                     if new_order_status == 'untarring':
@@ -234,7 +234,7 @@ def update_all_order_status():
                         except tarfile.TarError as e:
                             Orders.update().where(Orders.c.orderId == order_id).values({'orderStatus': 'error'}).execute()
                             orders_with_errors.append({'orderId': order_id, 'error: ': e.message})
-			    print 'Order status: error untarring'
+                            print 'Order status: error untarring'
                         
                         
                     if new_order_status == 'ready':
@@ -243,7 +243,7 @@ def update_all_order_status():
             else:
                 Orders.update().where(Orders.c.orderId == order_id).values({'orderStatus': 'error'}).execute()
                 orders_with_errors.append({'orderId': order_id, 'status code: ':status_code ,'error': json})
-		print 'Order status: error getting earkweb order status'
+                print 'Order status: error getting earkweb order status'
         
         return_json = {'ordersUpdated': orders_with_changed_status, 'ordersWithErrors': orders_with_errors}
         if len(orders_with_errors) == 0:
